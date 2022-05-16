@@ -20,4 +20,4 @@
 
 参考图片：自动化立体仓库监控调度系统
 
-![自动化立体仓库监控调度系统](C:\Users\liqiubo\Documents\Downloads\自动化立体仓库监控调度系统.jpg)
+![image-20220516080337896](C:\Users\liqiubo\AppData\Roaming\Typora\typora-user-images\image-20220516080337896.png)

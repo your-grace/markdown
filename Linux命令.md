@@ -42,7 +42,10 @@ tar -jxvf test.tar.bz2 /test #解压.bz2格式的到test文件夹
 tar -Jxvf test.tar.xz /test  #解压.xz格式的到test文件夹
 ```
 ####	7.文件和目录管理
+
 ![image-20220315103311855](C:\Users\liqiubo\AppData\Roaming\Typora\typora-user-images\image-20220315103311855.png)
+
+
 ```bash
 #文件第一个字符：l链接 d目录 -文件
 ll
