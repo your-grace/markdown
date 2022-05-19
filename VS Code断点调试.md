@@ -1,10 +1,10 @@
 ### 1.安装Chrome Debug插件
 
-![image-20220307091004242](C:\Users\liqiubo\AppData\Roaming\Typora\typora-user-images\image-20220307091004242.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/5aeb66e4cef9419b922fdff4137ad3d1.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5L2g5ru06aOO,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 ### 2.创建Debug配置文件
 
-![image-20220307091131542](C:\Users\liqiubo\AppData\Roaming\Typora\typora-user-images\image-20220307091131542.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/42d6a3ac89e548a19ef56d450b88810b.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5L2g5ru06aOO,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 > 修改配置文件，内容如下
 >
@@ -73,15 +73,15 @@
 
 > 以调试方式启动项目
 
-![image-20220307092438776](C:\Users\liqiubo\AppData\Roaming\Typora\typora-user-images\image-20220307092438776.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/4f4303a6d65a4a0dbd9e537394dfacf5.png)
 
 > 启动调试插件，开始调试
 
-![image-20220307092601548](C:\Users\liqiubo\AppData\Roaming\Typora\typora-user-images\image-20220307092601548.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/a7e98c5b814b4332b95f4b50fb33294a.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5L2g5ru06aOO,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 > 设置断点，启动插件后触发断点就可以在Vs Code中看到已经命中断点了
 
-![image-20220307093133507](C:\Users\liqiubo\AppData\Roaming\Typora\typora-user-images\image-20220307093133507.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/4886b64279ff4316b76619a186de0025.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5L2g5ru06aOO,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 ### 参考链接
 

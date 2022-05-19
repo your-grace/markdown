@@ -43,7 +43,7 @@ tar -Jxvf test.tar.xz /test  #解压.xz格式的到test文件夹
 ```
 ####	7.文件和目录管理
 
-![image-20220315103311855](C:\Users\liqiubo\AppData\Roaming\Typora\typora-user-images\image-20220315103311855.png)
+![在这里插入图片描述](https://img-blog.csdnimg.cn/856c54ac10a848cfb3be7d9ac4f6f76d.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5L2g5ru06aOO,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
 ```bash
