@@ -23,6 +23,6 @@
 > ```js
 > //注释或删除如下代码，相关的代码也可酌情删除或注释掉
 > if (isProd) {
->    config.externals = assetsCDN.externals
+>    	config.externals = assetsCDN.externals
 > }
 > ```
