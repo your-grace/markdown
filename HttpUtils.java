@@ -113,7 +113,8 @@ public class HttpUtils
      */
     public static String sendPost(String url, String param)
     {
-        PrintWriter out = null;
+        //PrintWriter out = null;
+		OutputStreamWriter out = null;
         BufferedReader in = null;
         StringBuilder result = new StringBuilder();
         try
@@ -129,8 +130,10 @@ public class HttpUtils
             conn.setRequestProperty("content-Type", "application/json;charset=utf-8");
             conn.setDoOutput(true);
             conn.setDoInput(true);
-            out = new PrintWriter(conn.getOutputStream());
+            //out = new PrintWriter(conn.getOutputStream());
             out.print(param);
+			out = new OutputStreamWriter(conn.getOutputStream(), "utf-8");
+            out.write(param);
             out.flush();
             in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
             String line;
