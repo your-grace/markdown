@@ -85,6 +85,30 @@ ORDER BY Persons.LastName
 SELECT id value,item_text text from sys_dict_item 
 where dict_id = (SELECT id from sys_dict dict WHERE dict_code='empty_flag')
 ```
+### 递归查询所有子级包括自身
+
+```sql
+SELECT
+	DATA.* 
+FROM
+	(
+	SELECT
+		@ids AS _ids,
+		( SELECT @ids := GROUP_CONCAT( PR_PROCESS_ID ) FROM gm_prp_flow WHERE FIND_IN_SET( PARENT_ID, @ids ) ) AS cids,
+		@l := @l + 1 AS LEVEL 
+	FROM
+		gm_prp_flow,
+		( SELECT @ids := '8a81c2b6851838ab018518505965003e', @l := 0 ) b 
+	WHERE
+		@ids IS NOT NULL 
+	) ID,
+	gm_prp_flow DATA 
+WHERE
+	FIND_IN_SET( DATA.PR_PROCESS_ID, ID._ids ) 
+ORDER BY
+	id DESC
+```
+
 
 ### 参考
 
