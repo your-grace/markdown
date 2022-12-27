@@ -108,7 +108,25 @@ WHERE
 ORDER BY
 	id DESC
 ```
-
+where子句=指定行所对应的条件	having子句=指定组所对应的条件
+```
+group by
+having子句的要素：3 个要素：常数、聚合函数 和 聚合键
+HAVING 大多数情况下和结合 GROUP BY 来使用，但不是一定要结合 GROUP BY 来使用
+limit i,n	i-默认为0,n-offset偏移数量
+SQL 的执行顺序
+(8)SELECT
+(9)DISTINCT 
+(11)<TOP specification><select list>
+(1)FROM <left table>
+(3)<join_type>JOIN <right_table>
+(2)ON <join_condition>
+(4)WHERE <where_condition>
+(5)GROUP BY <group_by_list>
+(6)WITH {CUBE|ROLLUP}
+(7)HAVING <having_condition>
+(10)ORDER BY <order_by_list>
+```
 
 ### 参考
 
