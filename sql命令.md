@@ -108,6 +108,40 @@ WHERE
 ORDER BY
 	id DESC
 ```
+### 递归查询所有父级包括自身
+
+```sql
+SELECT
+	DATA .*, LEVEL
+FROM
+	(
+		SELECT
+			@ids AS _ids,
+			(
+				SELECT
+					@ids := GROUP_CONCAT(PARENT_ID)
+				FROM
+					gm_prp_flow
+				WHERE
+					FIND_IN_SET(PR_PROCESS_ID, @ids)
+			) AS cids ,@l := @l + 1 AS LEVEL
+		FROM
+			gm_prp_flow,
+			(
+				SELECT
+					@ids := '8a81c2b6855cc58301855cff6845002c',
+					@l := 0
+			) b
+		WHERE
+			@ids IS NOT NULL AND @ids <> 0
+	) ID,
+	gm_prp_flow DATA
+WHERE
+	FIND_IN_SET(DATA .PR_PROCESS_ID, ID._ids)
+ORDER BY
+	LEVEL
+```
+
 where子句=指定行所对应的条件	having子句=指定组所对应的条件
 ```
 group by
