@@ -1,6 +1,6 @@
-### 多表查询
+#### 多表查询
 
-### 内连接inner join
+#### 内连接inner join
 
 > 内连接：inner join on关键字  找出两表的【交集】
 >
@@ -59,7 +59,7 @@ ORDER BY Persons.LastName
 | Carter   | Thomas    | 44678   |
 | Bush     | George    |         |
 
-### 右连接right join
+#### 右连接right join
 
 > 会显示右边表的全部数据，左边没有数据则以null显示
 
@@ -79,14 +79,13 @@ ORDER BY Persons.LastName
 | Carter   | Thomas    | 44678   |
 |          |           | 34764   |
 
-### 查询结果作为数据的查询条件
+#### 查询结果作为数据的查询条件
 
 ```sql
 SELECT id value,item_text text from sys_dict_item 
 where dict_id = (SELECT id from sys_dict dict WHERE dict_code='empty_flag')
 ```
-### 递归查询所有子级包括自身
-
+#### 递归查询所有子级包括自身
 ```sql
 SELECT
 	DATA.* 
@@ -108,7 +107,7 @@ WHERE
 ORDER BY
 	id DESC
 ```
-### 递归查询所有父级包括自身
+#### 递归查询所有父级包括自身
 
 ```sql
 SELECT
@@ -141,13 +140,16 @@ WHERE
 ORDER BY
 	LEVEL
 ```
-
-where子句=指定行所对应的条件	having子句=指定组所对应的条件
+#### 关键词
 ```
-group by
+where子句=指定行所对应的条件	having子句=指定组所对应的条件
+ETL：数据的抽取-Extract、转化-Transform、装载-Load
+group by-分组	alter-改变	nested-嵌套
+Join Buffer Size-连接缓存区大小
+ASC升序-默认	DESC-降序
 having子句的要素：3 个要素：常数、聚合函数 和 聚合键
 HAVING 大多数情况下和结合 GROUP BY 来使用，但不是一定要结合 GROUP BY 来使用
-limit i,n	i-默认为0,n-offset偏移数量
+limit i,n	i-默认为0,n-offset偏移量
 SQL 的执行顺序
 (8)SELECT
 (9)DISTINCT 
