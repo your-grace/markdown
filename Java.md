@@ -95,3 +95,143 @@ public class ArrayMax {
 }
 ```
 
+#### lambda表达式
+
+##### 内置函数式接口
+
+```java
+//1、Consumer 消费性接口：void accept(T t)；
+//有一个参数，并且无返回值
+public static void test3() {
+    //这个e就代表所实现的接口的方法的参数，
+    Consumer<String> consumer = e->System.out.println("Lambda 表达式方式，"+e);
+    consumer.accept("传入参数");
+}
+//2、Supplier供给型接口： T get();
+public class Test2 {
+    public static void main(String[] args) {
+        ArrayList<Integer> res = getNumList(10,()->(int)(Math.random()*100));
+        System.out.println(res);
+    }
+    public static ArrayList<Integer> getNumList(int num, Supplier<Integer> sup){
+        ArrayList<Integer> list = new ArrayList<>();
+        for (int i = 0; i < num; i++) {
+            Integer e = sup.get();
+            list.add(e);
+        }
+        return list;
+    }
+}
+//3、Function 函数式接口：R apply(T t);
+public class Test2 {
+    public static void main(String[] args) {
+        String newStr = strHandler("abc",(str)->str.toUpperCase());
+        System.out.println(newStr);
+        newStr = strHandler("  abc  ",(str)->str.trim());
+        System.out.println(newStr);
+    }
+    public static String strHandler(String str, Function<String,String>fun){
+        return fun.apply(str);
+    }
+}
+//4、Predicate 断言式接口：boolean test(T t);
+public class Test2 {
+    public static void main(String[] args) {
+        List<String> list = Arrays.asList("hello","jiangshuying","lambda","www","ok","q");
+        List<String> ret = filterStr(list,(str)->str.length()>2);
+        System.out.println(ret);
+    }
+    public static List<String> filterStr(List<String> list, Predicate<String> pre){
+        ArrayList<String> arrayList = new ArrayList<>();
+        for(String str:list){
+            if(pre.test(str)) {
+                arrayList.add(str);
+            }
+        }
+        return arrayList;
+    }
+}
+```
+
+#####  方法引用与构造器引用
+
+```
+对象::实例方法名
+类::静态方法名
+类::实例方法名
+```
+
+```java
+public static void test9(){
+    Comparator<Integer> comparator = (x,y)->Integer.compare(x,y);
+    Comparator<Integer> comparator1 = Integer::compare;
+    int compare = comparator.compare(1,2);
+    int compare1 = comparator1.compare(1,2);
+    System.out.println("compare:"+compare);
+    System.out.println("compare1:"+compare1);
+}
+```
+
+##### lambda表达式的一些常见用法
+
+```java
+//1、使用lambda表达式对集合进行迭代
+public class Test3 {
+    public static void main(String[] args) {
+        List<String> list = Arrays.asList("java","c#","javascript");
+        //before java8
+        for (String str:list){
+            System.out.println("before java8,"+str);
+        }
+        //after java8
+        list.forEach(x-> System.out.println("after java8,"+x));
+    }
+}
+//2、用lambda表达式实现map
+public class Test3 {
+    public static void main(String[] args) {
+        List<Double> list = Arrays.asList(10.0,20.0,30.0);
+        list.stream().map(x->x+x*0.05).forEach(x-> System.out.println(x));
+    }
+}
+//3、用lambda表达式实现map与reduce
+public class Test3 {
+    public static void main(String[] args) {
+        //before java8
+        List<Double> cost = Arrays.asList(10.0, 20.0,30.0);
+        double sum = 0;
+        for(double each:cost) {
+            each += each * 0.05;
+            sum += each;
+        }
+        System.out.println("before java8,"+sum);
+        //after java8
+        List<Double> list = Arrays.asList(10.0,20.0,30.0);
+        double sum2 = list.stream().map(x->x+x*0.05).reduce((sum1,x)->sum1+x).get();
+        System.out.println("after java8,"+sum2);
+    }
+}
+//4、filter操作
+public class Test3 {
+    public static void main(String[] args) {
+        List<Double> cost = Arrays.asList(10.0, 20.0,30.0,40.0);
+        List<Double> filteredCost = cost.stream().filter(x -> x > 25.0).collect(Collectors.toList());
+        filteredCost.forEach(x -> System.out.println(x));
+    }
+}
+//5、与函数式接口Predicate配合
+public class Test4 {
+    public static void filterTest(List<String> languages, Predicate<String> condition) {
+        languages.stream().filter(x -> condition.test(x)).forEach(x -> System.out.println(x + " "));
+    }
+    public static void main(String[] args) {
+        List<String> languages = Arrays.asList("Java","Python","scala","Shell","R");
+        filterTest(languages,x->x.startsWith("J"));//Java 
+        filterTest(languages,x -> x.endsWith("a"));//Java,scala 
+        filterTest(languages,x -> true);//Java,Python,scala,Shell,R
+        filterTest(languages,x -> false);//
+        filterTest(languages,x -> x.length() > 4);//Python,scala,Shell,
+    }
+}
+```
+
