@@ -86,6 +86,7 @@ SELECT id value,item_text text from sys_dict_item
 where dict_id = (SELECT id from sys_dict dict WHERE dict_code='empty_flag')
 ```
 #### 递归查询所有子级包括自身
+
 ```sql
 SELECT
 	DATA.* 
@@ -109,7 +110,6 @@ ORDER BY
 	id DESC
 ```
 #### 递归查询所有父级包括自身
-
 ```sql
 SELECT
 	DATA .*, LEVEL
