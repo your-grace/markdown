@@ -17,6 +17,7 @@ CAS：Compare And Swap
 CPU密集型：N+1	I/O密集型：2N
 happens-before规则（JSR 133）前一个操作的结果对后一个操作是可见的，无论这两个操作是否在同一个线程里	
 并发编程三个重要特性：原子性（synchronized/lock）、可见性（synchronized/volatile/lock）、有序性
+druid连接池默认：项目访问地址+/druid，若配置中定义了druidWebStatFilter，则使用相应的定义配置。
 ```
 
 #### join用法
