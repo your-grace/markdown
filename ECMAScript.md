@@ -74,3 +74,34 @@ const updateUser = {
 consle.log(updateUser)
 ```
 
+#### 模拟数据promise
+```javascript
+//   模拟调用接口
+function getData() {
+    return new Promise<any[]>((resolve, reject) => {
+        setTimeout(() => {
+            // 模拟接口调用有概率出错
+            if (Math.random() > 0.5) {
+                resolve([
+                    {
+                        key: 1,
+                        name: 'apple',
+                        value: 1,
+                    },
+                    {
+                        key: 2,
+                        name: 'banana',
+                        value: 2,
+                    },
+                    {
+                        key: 3,
+                        name: 'orange',
+                        value: 3,
+                    },
+                ]);
+            } else {
+                reject(new Error('不小心出错了！'));
+            }
+        }, 3000);
+    });
+}
