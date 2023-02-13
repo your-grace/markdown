@@ -76,7 +76,7 @@ consle.log(updateUser)
 
 #### 模拟数据promise
 ```javascript
-//   模拟调用接口
+//模拟调用接口
 function getData() {
     return new Promise<any[]>((resolve, reject) => {
         setTimeout(() => {
