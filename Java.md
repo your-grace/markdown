@@ -171,6 +171,20 @@ public static void test9(){
     System.out.println("compare:"+compare);
     System.out.println("compare1:"+compare1);
 }
+//::-把方法当做参数传到stream内部，使stream的每个元素都传入到该方法里面执行一下
+public class MyTest {
+    public static void  printValur(String str){
+        System.out.println("print value : "+str);
+    }
+ 
+    public static void main(String[] args) {
+        List<String> al = Arrays.asList("a", "b", "c", "d");
+        al.forEach(AcceptMethod::printValur);
+        //下面的方法和上面等价的
+        Consumer<String> methodParam = AcceptMethod::printValur; //方法参数
+        al.forEach(x -> methodParam.accept(x));//方法执行accept
+    }
+}
 ```
 
 ##### lambda表达式的一些常见用法
