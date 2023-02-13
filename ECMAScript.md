@@ -1,4 +1,5 @@
 ```
+闭包（closure）：有权访问另一个函数作用域中变量的函数。
 shift:移除数组第一项|pop:移除数组最后一项|unshift:向数组开头添加元素|push:向数组结尾添加元素
 [].slice.call(arguments)循环遍历arguments并复制到类数组的新数组
 Object.assign(target:{},source1,source2)将可枚举属性的值的一个或多个源对象复制到目标对象
