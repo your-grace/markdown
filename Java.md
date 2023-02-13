@@ -185,6 +185,7 @@ public class MyTest {
         al.forEach(x -> methodParam.accept(x));//方法执行accept
     }
 }
+//OPC UA通信协议 物联网-IOT
 ```
 
 ##### lambda表达式的一些常见用法
