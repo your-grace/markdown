@@ -1,4 +1,4 @@
-#### vuex
+#### vuex和router
 
 ```javascript
 //actions异步执行，通过dispatch触发；mutations同步执行，通过commit触发修改states
@@ -23,6 +23,111 @@ Logout({ commit, state }) {
         })
     })
 }
+//路由模式：hash和history
+//实例方法
+this.$router.push({path:"/home/recommend", query:{wd:1,offset:0}})
+this.$router.replace({path:"/home/recommend", query:{wd:1,offset:0}})
+this.$router.go(3)   // 从当前路由history栈的位置前进3条
+this.$router.go(-1) // 从当前路由history栈的位置后退1条
+this.$router.go(0)  // 强制刷新页面
+this.$router.back() // 等价于this.$router.go(-1)
+this.$router.forward() // 等价于this.$router.go(1)
+//路由懒加载
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+Vue.use(VueRouter)
+const routes = [
+  {
+    path: '/mock',
+    name: 'Mock',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Mock.vue')
+  }
+]
+const router = new VueRouter({
+  routes
+})
+export default router
+//路由守卫
+export default {
+  props: ['id'],
+  data() {
+      return {
+          musicUrl: ''
+      }
+  },
+  beforeRouteEnter (to, from, next) {
+    // 在渲染该组件的对应路由被 confirm 前调用
+    // 不！能！获取组件实例 `this`
+    // 因为当守卫执行前，组件实例还没被创建
+    console.log(undefined)
+  },
+  beforeRouteUpdate (to, from, next) {
+    // 在当前路由改变，但是该组件被复用时调用
+    // 举例来说，对于一个带有动态参数的路径 /foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，
+    // 由于会渲染同样的 Foo 组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
+    // 可以访问组件实例 `this`
+  },
+  beforeRouteLeave (to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    // 可以访问组件实例 `this`
+  }
+}
+next()  // 允许路由跳转 
+next(true) // 允许路由跳转
+next(false) // 不允许路由跳转
+next('/') / next({ path: '/' })
+//路由独享守卫
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/foo',
+      component: Foo,
+      beforeEnter: (to, from, next) => {
+        // ...
+      }
+    }
+  ]
+})
+const routes = [
+    {
+        path: '/mine',
+        component: () => import('../views/Mine'),
+        //路由独享守卫
+        beforeEnter(to, from, next) {
+            // 因为这个守卫没有任何DOM操作或者对组件自身状态进行读写
+            // 这样的守卫就可以作为路由独享守卫
+            // 正确的做法存在cookie storage中
+            if (localStorage.getItem("user")) {
+              next();
+            } else {
+              // 这里吗没有this, next接收一个回调函数,在回调函数中跳转
+              // 下面的写法进入了个人页面,又从个人页面重定向到登录,这样可能会造成一些不必要的bug
+              //   next((vm) => {
+              //   vm.$router.replace('/landr')
+              //   });
+              next({name:'login',params:{to}}); //阻止本次跳转,直接导航到指定路由
+            }
+          }
+    },
+    {
+        path: '/landr', // login an register
+        component: () => import('../views/loginanregister/LoginAndRegister'),
+        children: [
+            {
+                name:'login',
+                path: 'login',
+                component: () => import('../views/loginanregister/Login')
+            },
+            {
+                path: 'register',
+                component: () => import('../views/loginanregister/Register')
+            }
+        ]
+    }
+]
 ```
 
 #### 父组件
