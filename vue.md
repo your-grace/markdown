@@ -1,7 +1,7 @@
 #### vuex
 
 ```javascript
-//action异步执行，通过dispatch触发；mutations同步执行，通过commit触发修改states
+//actions异步执行，通过dispatch触发；mutations同步执行，通过commit触发修改states
 store.dispatch('Logout').then(() => {
 	next({ path: '/user/login', query: { redirect: to.fullPath } })
 })
