@@ -1,3 +1,30 @@
+#### vuex
+
+```javascript
+//action异步执行，通过dispatch触发；mutations同步执行，通过commit触发修改states
+store.dispatch('Logout').then(() => {
+	next({ path: '/user/login', query: { redirect: to.fullPath } })
+})
+// 登出
+Logout({ commit, state }) {
+    return new Promise((resolve) => {
+        let logoutToken = state.token;
+        commit('SET_TOKEN', '')
+        commit('SET_PERMISSIONLIST', [])
+        logout(logoutToken).then(() => {
+            if (process.env.VUE_APP_SSO == 'true') {
+                let sevice = 'http://' + window.location.host + '/'
+                let serviceUrl = encodeURIComponent(sevice)
+                window.location.href = process.env.VUE_APP_CAS_BASE_URL + '/logout?service=' + serviceUrl
+            }
+            resolve()
+		}).catch(() => {
+            reject(error)
+        })
+    })
+}
+```
+
 #### 父组件
 
 ```vue
