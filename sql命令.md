@@ -88,6 +88,8 @@ where dict_id = (SELECT id from sys_dict dict WHERE dict_code='empty_flag')
 #### 递归查询所有子级包括自身
 
 ```sql
+-- @ids、@l	自定义变量
+-- (SELECT @ids := '8a81c2b6855cc58301855cff6845002c',@l := 0)	临时表
 SELECT DATA.* 
 FROM
 	(
@@ -126,6 +128,22 @@ WHERE
 	FIND_IN_SET(DATA .PR_PROCESS_ID, ID._ids)
 ORDER BY LEVEL
 ```
+#### GROUP_CONCAT
+
+```sql
+-- GROUP_CONCAT	将分组中括号里对应的字符串进行连接
+-- 将利用name(salary)进行连接，其中分隔符为';'
+SELECT
+	dept_id,
+	GROUP_CONCAT(
+		CONCAT(NAME, "(", salary, ")") SEPARATOR ';'
+	)
+FROM
+	employee2
+GROUP BY
+	dept_id
+```
+
 #### 关键词
 ```
 where子句=指定行所对应的条件	having子句=指定组所对应的条件
