@@ -88,8 +88,7 @@ where dict_id = (SELECT id from sys_dict dict WHERE dict_code='empty_flag')
 #### 递归查询所有子级包括自身
 
 ```sql
-SELECT
-	DATA.* 
+SELECT DATA.* 
 FROM
 	(
 	SELECT
@@ -106,13 +105,11 @@ FROM
 	gm_prp_flow DATA 
 WHERE
 	FIND_IN_SET( DATA.PR_PROCESS_ID, ID._ids ) 
-ORDER BY
-	id DESC
+ORDER BY LEVEL
 ```
 #### 递归查询所有父级包括自身
 ```sql
-SELECT
-	DATA .*, LEVEL
+SELECT DATA .*, LEVEL
 FROM
 	(
         SELECT @ids AS _ids,
@@ -127,8 +124,7 @@ FROM
 	gm_prp_flow DATA
 WHERE
 	FIND_IN_SET(DATA .PR_PROCESS_ID, ID._ids)
-ORDER BY
-	LEVEL
+ORDER BY LEVEL
 ```
 #### 关键词
 ```
