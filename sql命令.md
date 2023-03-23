@@ -136,7 +136,7 @@ ORDER BY LEVEL
 SELECT
 	dept_id,
 	GROUP_CONCAT(
-		CONCAT(NAME, "(", salary, ")") SEPARATOR ';'
+		CONCAT(NAME, "(",salary,")") SEPARATOR ';'
 	)
 FROM
 	employee2
