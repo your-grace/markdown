@@ -146,8 +146,9 @@ GROUP BY
 
 #### 关键词
 ```
-where子句=指定行所对应的条件	having子句=指定组所对应的条件
+ACID：原子性-atomicity、一致性-consistency、隔离性-isolation、持久性-durability
 ETL：数据的抽取-Extract、转化-Transform、装载-Load
+where子句=指定行所对应的条件	having子句=指定组所对应的条件
 group by-分组	alter-改变	nested-嵌套
 Join Buffer Size-连接缓存区大小
 ASC升序-默认	DESC-降序
