@@ -18,8 +18,70 @@ CPU密集型：N+1	I/O密集型：2N
 happens-before规则（JSR 133）前一个操作的结果对后一个操作是可见的，无论这两个操作是否在同一个线程里	
 并发编程三个重要特性：原子性（synchronized/lock）、可见性（synchronized/volatile/lock）、有序性
 druid连接池默认：项目访问地址+/druid，若配置中定义了druidWebStatFilter，则使用相应的定义配置。
-IOC：控制反转-别名（依赖注入DI）	AOP：切面编程
+IOC：控制反转-别名（依赖注入DI）	AOP：切面编程	ORM-对象关系映射（Object Relation Mapping）
+jdk5注解新特性：通过注解来配置信息就是为了简化IOC容器的配置，注解可以把对象添加到IOC容器中、处理对象依赖关系
 ```
+
+#### Spring
+
+**无论是创建对象、处理对象之间的依赖关系、对象创建的时间还是对象的数量，我们都是在Spring为我们提供的IOC容器上配置对象的信息就好了**
+
+> ==**6大模块**==
+>
+>  - Spring Core  spring的核心功能： IOC容器, 解决对象创建及依赖关系
+>
+>  - Spring Web  Spring对web模块的支持。
+>
+>  - - 可以与struts整合,让struts的action创建交给spring
+>    - spring mvc模式
+>
+>  - Spring DAO  Spring 对jdbc操作的支持  【JdbcTemplate模板工具类】
+>
+>  - Spring ORM  spring对orm的支持：
+>
+>  - - 既可以与hibernate整合，【session】
+>    - 也可以使用spring的对hibernate操作的封装
+>
+>  - Spring AOP  切面编程
+>
+>  - SpringEE  spring 对javaEE其他模块的支持
+>
+>  ==创建对象以及处理对象依赖关系，相关的注解：==
+>
+>  - **@ComponentScan扫描器**
+>
+>  - **@Configuration表明该类是配置类**
+>
+>  - **@Component  指定把一个对象加入IOC容器--->@Name也可以实现相同的效果【一般少用】**
+>
+>  - **@Repository  作用同@Component； 在持久层使用**
+>
+>  - **@Service    作用同@Component； 在业务逻辑层使用**
+>
+>  - **@Controller   作用同@Component； 在控制层使用**
+>
+>  - **@Resource  依赖关系**
+>
+>  - - **如果@Resource不指定值，那么就根据类型来找，相同的类型在IOC容器中不能有两个**
+>   - **如果@Resource指定了值，那么就根据名字来找**
+>
+>  ==**Bean创建细节总结**==  
+>  1)对象创建： 单例/多例
+>   `scope="singleton"`, 默认值， 即 默认是单例 【service/dao/工具类】
+>   `scope="prototype"`, 多例；        【Action对象】
+>
+>  2)什么时候创建?
+>    `scope="prototype"`  在用到对象的时候，才创建对象。
+>    `scope="singleton"`  在启动(容器初始化之前)， 就已经创建了bean，且整个应用只有一个。
+>  3)是否延迟创建
+>    `lazy-init="false`"  默认为false,  不延迟创建，即在启动时候就创建对象
+>    `lazy-init="true"`  延迟初始化， 在用到对象的时候才创建对象
+>    （只对单例有效）
+>  4)创建对象之后，初始化/销毁
+>    `init-method="init_user"`    【对应对象的init_user方法，在对象创建之后执行 】注解：`@PostConstruct`
+>    `destroy-method="destroy_user"`  【在调用容器对象的destroy方法时候执行，(容器用实现类)】注解：`@PreDestroy`
+>
+> ==依赖注入和控制反转==：所谓的依赖注入，则是甲方开放接口，在它需要的时候，能够讲乙方传递进来(注入)；所谓的控制反转，甲乙双方不相互依赖，交易活动的进行不依赖于甲乙任何一方，整个活动的进行由第三方负责管理。
 
 #### join用法
 
