@@ -1,4 +1,4 @@
-```
+```tex
 静态初始器（静态块）Static Initializer	初始化操作顺序（加载类之后和首次使用之前）：静态代码-对象代码-构造函数
 实例化方式：new语句 反射 clone()方法 反序列化readObject
 JMM:Java Memory Model
@@ -20,6 +20,9 @@ happens-before规则（JSR 133）前一个操作的结果对后一个操作是�
 druid连接池默认：项目访问地址+/druid，若配置中定义了druidWebStatFilter，则使用相应的定义配置。
 IOC：控制反转-别名（依赖注入DI）	AOP：切面编程	ORM-对象关系映射（Object Relation Mapping）
 jdk5注解新特性：通过注解来配置信息就是为了简化IOC容器的配置，注解可以把对象添加到IOC容器中、处理对象依赖关系
+POJO（Plain Ordinary Java Object）：简单的Java对象，普通JavaBeans
+EJB（Enterprise Java Beans）：是JavaEE中的商业应用组件技术，是JavaEE三大组件（Servlet，JSP，EJB）之一。EJB提供了让客户端使用远程分布式对象的框架，极大地简化了具有良好的可扩充性的企业级应用的开发。EJB组件结构是基于组件的分布式计算结构，是分布式应用系统中的组件。
+JPA是Java Persistence API的简称，中文名Java持久层API，是JDK5.0注解或XML描述对象－关系表的映射关系，并将运行期的实体对象持久化到数据库中。
 ```
 
 #### Spring
@@ -61,9 +64,8 @@ jdk5注解新特性：通过注解来配置信息就是为了简化IOC容器的�
 >  - **@Controller   作用同@Component； 在控制层使用**
 >
 >  - **@Resource  依赖关系**
->
 >  - - **如果@Resource不指定值，那么就根据类型来找，相同的类型在IOC容器中不能有两个**
->   - **如果@Resource指定了值，那么就根据名字来找**
+>  - -  **如果@Resource指定了值，那么就根据名字来找**
 >
 >  ==**Bean创建细节总结**==  
 >  1)对象创建： 单例/多例
