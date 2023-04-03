@@ -23,6 +23,7 @@ jdk5注解新特性：通过注解来配置信息就是为了简化IOC容器的�
 POJO（Plain Ordinary Java Object）：简单的Java对象，普通JavaBeans
 EJB（Enterprise Java Beans）：是JavaEE中的商业应用组件技术，是JavaEE三大组件（Servlet，JSP，EJB）之一。EJB提供了让客户端使用远程分布式对象的框架，极大地简化了具有良好的可扩充性的企业级应用的开发。EJB组件结构是基于组件的分布式计算结构，是分布式应用系统中的组件。
 JPA是Java Persistence API的简称，中文名Java持久层API，是JDK5.0注解或XML描述对象－关系表的映射关系，并将运行期的实体对象持久化到数据库中。
+BBP的全称：BeanPostProcessor，一般我们俗称对象后处理器
 ```
 
 #### Spring
