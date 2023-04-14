@@ -144,7 +144,18 @@ GROUP BY
 	dept_id
 ```
 
+#### 自增设置
+
+```mysql
+-- 这将重置“id”列的序列，使其从1开始。请注意，这仅会影响插入表中的新行。现有行将保留其原始值。
+ALTER TABLE gm_material AUTO_INCREMENT = 4067
+-- 更新现有行以从1开始
+SET @new_id = 0;
+UPDATE your_table SET id = @new_id:=@new_id+1;
+```
+
 #### 关键词
+
 ```
 ACID：原子性-atomicity、一致性-consistency、隔离性-isolation、持久性-durability
 ETL：数据的抽取-Extract、转化-Transform、装载-Load
