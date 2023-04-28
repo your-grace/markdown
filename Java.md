@@ -24,6 +24,12 @@ POJO（Plain Ordinary Java Object）：简单的Java对象，普通JavaBeans
 EJB（Enterprise Java Beans）：是JavaEE中的商业应用组件技术，是JavaEE三大组件（Servlet，JSP，EJB）之一。EJB提供了让客户端使用远程分布式对象的框架，极大地简化了具有良好的可扩充性的企业级应用的开发。EJB组件结构是基于组件的分布式计算结构，是分布式应用系统中的组件。
 JPA是Java Persistence API的简称，中文名Java持久层API，是JDK5.0注解或XML描述对象－关系表的映射关系，并将运行期的实体对象持久化到数据库中。
 BBP的全称：BeanPostProcessor，一般我们俗称对象后处理器
+-Dserver.port=8082 启动端口在Edit-Configurations中修改
+指定FeignClient字节码
+@EnableFeignClients(clients={UserClient.class})
+RestTemplate远程调用	Eureka注册中心	Ribbon负载均衡	Nacos(Nacos服务分级存储)注册中心、配置管理中心
+Feign远程调用（http客户端）	Gateway(SpringCloudGateway)统一网关-基于Spring5提供的WebFlux，响应式编程实现	
+Zuul基于Servlet实现，阻塞式编程 
 ```
 
 #### Spring
