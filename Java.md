@@ -25,6 +25,7 @@ EJB（Enterprise Java Beans）：是JavaEE中的商业应用组件技术，是Ja
 JPA是Java Persistence API的简称，中文名Java持久层API，是JDK5.0注解或XML描述对象－关系表的映射关系，并将运行期的实体对象持久化到数据库中。
 BBP的全称：BeanPostProcessor，一般我们俗称对象后处理器
 -Dserver.port=8082 启动端口在Edit-Configurations中修改
+服务消费者	服务提供者
 指定FeignClient字节码
 @EnableFeignClients(clients={UserClient.class})
 RestTemplate远程调用	Eureka注册中心	Ribbon负载均衡	Nacos(Nacos服务分级存储)注册中心、配置管理中心
