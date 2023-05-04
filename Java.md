@@ -30,7 +30,9 @@ BBP的全称：BeanPostProcessor，一般我们俗称对象后处理器
 @EnableFeignClients(clients={UserClient.class})
 RestTemplate远程调用	Eureka注册中心	Ribbon负载均衡	Nacos(Nacos服务分级存储)注册中心、配置管理中心
 Feign远程调用（http客户端）	Gateway(SpringCloudGateway)统一网关-基于Spring5提供的WebFlux，响应式编程实现	
-Zuul基于Servlet实现，阻塞式编程 
+Zuul基于Servlet实现，阻塞式编程 	Load-Balance负载均衡lb
+Apache-Lucene：以 Lucene 为基础建立的开源可用全文搜索引擎主要是 Solr 和 Elasticsearch
+Docker Compose：Docker容器编排 
 ```
 
 #### Spring
