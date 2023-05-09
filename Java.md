@@ -35,6 +35,10 @@ Apache-Lucene：以 Lucene 为基础建立的开源可用全文搜索引擎主�
 Docker Compose：Docker容器编排 
 ```
 
+```bash
+mvn clean install package '-Dmaven.test.skip=true'
+```
+
 #### Spring
 
 **无论是创建对象、处理对象之间的依赖关系、对象创建的时间还是对象的数量，我们都是在Spring为我们提供的IOC容器上配置对象的信息就好了**
