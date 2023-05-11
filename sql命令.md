@@ -85,6 +85,15 @@ ORDER BY Persons.LastName
 SELECT id value,item_text text from sys_dict_item 
 where dict_id = (SELECT id from sys_dict dict WHERE dict_code='empty_flag')
 ```
+#### not in替代方案
+
+```sql
+-- 使用NOT EXISTS子句。 NOT EXISTS子句将在查询中使用子查询，只返回不匹配的值。
+SELECT * FROM table1 a WHERE NOT EXISTS (SELECT * FROM table2 b WHERE b.id = a.id);
+-- 使用LEFT JOIN / IS NULL。LEFT JOIN操作会将左表的所有行与右表进行匹配，如果没有匹配的行，则为NULL。可以使用IS NULL子句来找到与左表不匹配的行。
+SELECT * FROM table1 a LEFT JOIN table2 b ON a.id = b.id WHERE b.id IS NULL;
+```
+
 #### 递归查询所有子级包括自身
 
 ```sql
