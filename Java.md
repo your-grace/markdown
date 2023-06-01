@@ -33,6 +33,7 @@ Feign远程调用（http客户端）	Gateway(SpringCloudGateway)统一网关-基
 Zuul基于Servlet实现，阻塞式编程 	Load-Balance负载均衡lb
 Apache-Lucene：以 Lucene 为基础建立的开源可用全文搜索引擎主要是 Solr 和 Elasticsearch
 Docker Compose：Docker容器编排 
+CI/CD：一个CI(Continuous Integration,表示持续集成)，两个CD(Continuous Delivery和 Continuous Deployment,分别是持续交付和持续部署。)
 ```
 
 ```bash
