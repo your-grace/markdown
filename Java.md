@@ -3,7 +3,8 @@
 实例化方式：new语句 反射 clone()方法 反序列化readObject
 JMM:Java Memory Model
 无序列化：transient
-共享不稳定可见性：volatile（禁止指令进行重排序优化）
+共享不稳定可见性：volatile（禁止指令进行重排序优化），修饰变量对所有线程可见，保证修饰变量可见性和顺序性
+重量级锁：synchronized
 原子性：Atomict	
 独占：Exclusive
 HQL:Hibernate Query Langauage	
