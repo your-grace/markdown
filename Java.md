@@ -37,6 +37,9 @@ Docker Compose：Docker容器编排
 CI/CD：一个CI(Continuous Integration,表示持续集成)，两个CD(Continuous Delivery和 Continuous Deployment,分别是持续交付和持续部署。)
 基本数据类型和对象的引用-栈stack
 new关键字创建的对象-堆heap
+jmap -histo:live pid | head -n 10
+查看到堆内对象示例的统计信息、查看 ClassLoader 的信息以及 finalizer 队列
+JDK的源码所在位置在JDK安装路径下的src.zip文件，需手动导入到Project Structrue SDKs-Classpath下
 ```
 
 ```bash
