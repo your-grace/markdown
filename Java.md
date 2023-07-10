@@ -40,6 +40,7 @@ new关键字创建的对象-堆heap
 jmap -histo:live pid | head -n 10
 查看到堆内对象示例的统计信息、查看 ClassLoader 的信息以及 finalizer 队列
 JDK的源码所在位置在JDK安装路径下的src.zip文件，需手动导入到Project Structrue SDKs-Classpath下
+javap -c Demo.class	反编译class文件为字节码指令
 ```
 
 ```bash
