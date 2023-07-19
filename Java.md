@@ -41,6 +41,8 @@ jmap -histo:live pid | head -n 10
 查看到堆内对象示例的统计信息、查看 ClassLoader 的信息以及 finalizer 队列
 JDK的源码所在位置在JDK安装路径下的src.zip文件，需手动导入到Project Structrue SDKs-Classpath下
 javap -c Demo.class	反编译class文件为字节码指令
+常用工具类：Scanner Arrays StringUtils Objects Collections Hutool Guava commons-lang3
+java8引入语法：类名::方法名-方法名后没有()
 ```
 
 ```bash
@@ -347,3 +349,133 @@ public class Test4 {
 > 依赖反转原则(DIP)：高层模块不应该依赖低层模块，二者都应该依赖其抽象；抽象不应该依赖细节，细节应该依赖抽象。
 > 迪米特法则：一个对象应该对其他对象保持最少的了解
 > 合成复用原则：尽量使用合成/聚合的方式，而不是使用继承
+
+#### ClassUtils
+spring 的`org.springframework.util`包下的`ClassUtils`类，它里面有很多让我们惊喜的功能。
+它里面包含了类和对象相关的很多非常实用的方法。
+##### 获取对象的所有接口
+如果你想获取某个对象的所有接口，可以使用 ClassUtils 的`getAllInterfaces`方法。例如：
+```java
+Class<?>[] allInterfaces = ClassUtils.getAllInterfaces(new User());
+```
+##### 获取某个类的包名
+如果你想获取某个类的包名，可以使用 ClassUtils 的`getPackageName`方法。例如：
+```java
+String packageName = ClassUtils.getPackageName(User.class);
+System.out.println(packageName);
+```
+#####  判断某个类是否内部类
+如果你想判断某个类是否内部类，可以使用 ClassUtils 的`isInnerClass`方法。例如：
+```java
+System.out.println(ClassUtils.isInnerClass(User.class));
+```
+##### 判断对象是否代理对象
+如果你想判断对象是否代理对象，可以使用 ClassUtils 的`isCglibProxy`方法。例如：
+```java
+System.out.println(ClassUtils.isCglibProxy(new User()));
+```
+
+#### BeanUtils
+Spring 给我们提供了一个`JavaBean`的工具类，它在`org.springframework.beans`包下面，它的名字叫做：`BeanUtils`。
+让我们一起看看这个工具可以带给我们哪些惊喜。
+##### 拷贝对象的属性
+曾几何时，你有没有这样的需求：把某个对象中的所有属性，都拷贝到另外一个对象中。这时就能使用 BeanUtils 的`copyProperties`方法。例如：
+```java
+User user1 = new User();
+user1.setId(1L);
+user1.setName("沉默王二");
+user1.setAddress("中国");
+User user2 = new User();
+BeanUtils.copyProperties(user1, user2);
+System.out.println(user2);
+```
+##### 实例化某个类
+如果你想通过反射实例化一个类的对象，可以使用 BeanUtils 的`instantiateClass`方法。例如：
+```java
+User user = BeanUtils.instantiateClass(User.class);
+System.out.println(user);
+```
+##### 获取指定类的指定方法
+如果你想获取某个类的指定方法，可以使用 BeanUtils 的`findDeclaredMethod`方法。例如：
+```java
+Method declaredMethod = BeanUtils.findDeclaredMethod(User.class, "getId");
+System.out.println(declaredMethod.getName());
+```
+##### 获取指定方法的参数
+如果你想获取某个方法的参数，可以使用 BeanUtils 的`findPropertyForMethod`方法。例如：
+```java
+Method declaredMethod = BeanUtils.findDeclaredMethod(User.class, "getId");
+PropertyDescriptor propertyForMethod = BeanUtils.findPropertyForMethod(declaredMethod);
+System.out.println(propertyForMethod.getName());
+```
+#### ReflectionUtils
+有时候，我们需要在项目中使用`反射`功能，如果使用最原始的方法来开发，代码量会非常多，而且很麻烦，它需要处理一大堆异常以及访问权限等问题。
+好消息是 Spring 给我们提供了一个`ReflectionUtils`工具，它在`org.springframework.util`包下面。
+
+##### 获取方法
+如果你想获取某个类的某个方法，可以使用 ReflectionUtils 类的`findMethod`方法。例如：
+```java
+Method method = ReflectionUtils.findMethod(User.class, "getId");
+```
+##### 获取字段
+如果你想获取某个类的某个字段，可以使用 ReflectionUtils 类的`findField`方法。例如：
+```java
+Field field = ReflectionUtils.findField(User.class, "id");
+```
+##### 执行方法
+如果你想通过反射调用某个方法，传递参数，可以使用 ReflectionUtils 类的`invokeMethod`方法。例如：
+```java
+ ReflectionUtils.invokeMethod(method, springContextsUtil.getBean(beanName), param);
+```
+##### 判断字段是否常量
+如果你想判断某个字段是否常量，可以使用 ReflectionUtils 类的`isPublicStaticFinal`方法。例如：
+```java
+Field field = ReflectionUtils.findField(User.class, "id");
+System.out.println(ReflectionUtils.isPublicStaticFinal(field));
+```
+##### 判断是否 equals 方法
+如果你想判断某个方法是否 equals 方法，可以使用 ReflectionUtils 类的`isEqualsMethod`方法。例如：
+```java
+Method method = ReflectionUtils.findMethod(User.class, "getId");
+System.out.println(ReflectionUtils.isEqualsMethod(method));
+```
+
+#### Optional
+
+```java
+//过滤值
+public class FilterOptionalDemo {
+    public static void main(String[] args) {
+        String password = "12345";
+        Optional<String> opt = Optional.ofNullable(password);
+        System.out.println(opt.filter(pwd -> pwd.length() > 6).isPresent());
+    }
+}
+```
+
+```java
+//过滤值
+Predicate<String> len6 = pwd -> pwd.length() > 6;
+Predicate<String> len10 = pwd -> pwd.length() < 10;
+password = "1234567";
+opt = Optional.ofNullable(password);
+boolean result = opt.filter(len6.and(len10)).isPresent();
+System.out.println(result);
+```
+
+```java
+//过滤值和转化值结合
+public class OptionalMapFilterDemo {
+    public static void main(String[] args) {
+        String password = "password";
+        Optional<String>  opt = Optional.ofNullable(password);
+
+        Predicate<String> len6 = pwd -> pwd.length() > 6;
+        Predicate<String> len10 = pwd -> pwd.length() < 10;
+        Predicate<String> eq = pwd -> pwd.equals("password");
+
+        boolean result = opt.map(String::toLowerCase).filter(len6.and(len10 ).and(eq)).isPresent();
+        System.out.println(result);
+    }
+}
+```
