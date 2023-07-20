@@ -43,6 +43,7 @@ JDK的源码所在位置在JDK安装路径下的src.zip文件，需手动导入�
 javap -c Demo.class	反编译class文件为字节码指令
 常用工具类：Scanner Arrays StringUtils Objects Collections Hutool Guava commons-lang3
 java8引入语法：类名::方法名-方法名后没有()
+StandardCharsets.UTF_8 枚举字符编码
 ```
 
 ```bash
