@@ -5,7 +5,7 @@ JMM:Java Memory Model
 无序列化：transient
 共享不稳定可见性：volatile（禁止指令进行重排序优化），修饰变量对所有线程可见，保证修饰变量可见性和顺序性
 重量级锁：synchronized
-原子性：Atomict	
+原子性：Atomic+包装类型	
 独占：Exclusive
 HQL:Hibernate Query Langauage	
 getSession():createQuery、save、saveOrUpdate、delete、update、createCriteria、createSQLQuery
@@ -375,10 +375,10 @@ System.out.println(ClassUtils.isInnerClass(User.class));
 ```java
 System.out.println(ClassUtils.isCglibProxy(new User()));
 ```
-
 #### BeanUtils
 Spring 给我们提供了一个`JavaBean`的工具类，它在`org.springframework.beans`包下面，它的名字叫做：`BeanUtils`。
 让我们一起看看这个工具可以带给我们哪些惊喜。
+
 ##### 拷贝对象的属性
 曾几何时，你有没有这样的需求：把某个对象中的所有属性，都拷贝到另外一个对象中。这时就能使用 BeanUtils 的`copyProperties`方法。例如：
 ```java
@@ -440,9 +440,7 @@ System.out.println(ReflectionUtils.isPublicStaticFinal(field));
 Method method = ReflectionUtils.findMethod(User.class, "getId");
 System.out.println(ReflectionUtils.isEqualsMethod(method));
 ```
-
 #### Optional
-
 ```java
 //过滤值
 public class FilterOptionalDemo {
@@ -453,7 +451,6 @@ public class FilterOptionalDemo {
     }
 }
 ```
-
 ```java
 //过滤值
 Predicate<String> len6 = pwd -> pwd.length() > 6;
@@ -463,7 +460,6 @@ opt = Optional.ofNullable(password);
 boolean result = opt.filter(len6.and(len10)).isPresent();
 System.out.println(result);
 ```
-
 ```java
 //过滤值和转化值结合
 public class OptionalMapFilterDemo {
@@ -480,3 +476,122 @@ public class OptionalMapFilterDemo {
     }
 }
 ```
+#### Lombok
+1. `@Getter`：生成属性的getter方法。
+
+2. `@Setter`：生成属性的setter方法。
+
+3. `@ToString`：生成toString方法，方便输出对象的字符串表示。
+
+4. `@EqualsAndHashCode`：生成equals和hashCode方法，用于对象比较和哈希计算。
+
+5. `@NoArgsConstructor`：生成无参构造函数。
+
+6. `@AllArgsConstructor`：生成全参构造函数。
+
+7. `@Data`：生成getter、setter、toString、equals和hashCode等方法。
+
+8. `@Builder`：生成Builder模式相关的代码，方便创建复杂对象。
+
+9. `@Slf4j`：为类自动生成一个名为"log"的Slf4j Logger对象，简化日志记录。
+
+10. `@SneakyThrows`：在方法中自动处理受检异常，使其不再需要显式地抛出。
+
+#### reflect
+
+1、获取反射类的Class对象
+
+```java
+Class c1 = Class.forName("com.itwanger.s39.ReflectionDemo3");
+System.out.println(c1.getCanonicalName());
+
+Class c2 = Class.forName("[D");
+System.out.println(c2.getCanonicalName());
+
+Class c3 = Class.forName("[[Ljava.lang.String;");
+System.out.println(c3.getCanonicalName());
+```
+
+输出结果：
+
+```text
+com.itwanger.s39.ReflectionDemo3
+double[]
+java.lang.String[][]
+```
+
+类名 + `.class`，只适合在编译前就知道操作的 Class。。
+
+```java
+Class c1 = ReflectionDemo3.class;
+System.out.println(c1.getCanonicalName());
+
+Class c2 = String.class;
+System.out.println(c2.getCanonicalName());
+
+Class c3 = int[][][].class;
+System.out.println(c3.getCanonicalName());
+```
+
+来看一下输出结果：
+
+```java
+com.itwanger.s39.ReflectionDemo3
+java.lang.String
+int[][][]
+```
+
+2、创建反射类的对象
+
+通过反射来创建对象的方式有两种：
+
+- 用 Class 对象的 `newInstance()` 方法。
+- 用 Constructor 对象的 `newInstance()` 方法。
+
+```java
+Class c1 = Writer.class;
+Writer writer = (Writer) c1.newInstance();
+
+Class c2 = Class.forName("com.itwanger.s39.Writer");
+Constructor constructor = c2.getConstructor();
+Object object = constructor.newInstance();
+```
+
+3、获取构造方法
+
+Class 对象提供了以下方法来获取构造方法 Constructor 对象：
+
+- `getConstructor()`：返回反射类的特定 public 构造方法，可以传递参数，参数为构造方法参数对应 Class 对象；缺省的时候返回默认构造方法。
+- `getDeclaredConstructor()`：返回反射类的特定构造方法，不限定于 public 的。
+- `getConstructors()`：返回类的所有 public 构造方法。
+- `getDeclaredConstructors()`：返回类的所有构造方法，不限定于 public 的。
+
+```java
+Class c2 = Class.forName("com.itwanger.s39.Writer");
+Constructor constructor = c2.getConstructor();
+
+Constructor[] constructors1 = String.class.getDeclaredConstructors();
+for (Constructor c : constructors1) {
+    System.out.println(c);
+}
+```
+
+4、获取字段
+
+大体上和获取构造方法类似，把关键字 Constructor 换成 Field 即可。
+
+```java
+Method setNameMethod = clazz.getMethod("setName", String.class);
+Method getNameMethod = clazz.getMethod("getName");
+```
+
+5、获取方法
+
+大体上和获取构造方法类似，把关键字 Constructor 换成 Method 即可。
+
+```java
+Method[] methods1 = System.class.getDeclaredMethods();
+Method[] methods2 = System.class.getMethods();
+```
+
+“注意，如果你想反射访问私有字段和（构造）方法的话，需要使用 `Constructor/Field/Method.setAccessible(true)` 来绕开 Java 语言的访问限制。”
