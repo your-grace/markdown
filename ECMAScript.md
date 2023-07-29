@@ -106,3 +106,52 @@ function getData() {
         }, 3000);
     });
 }
+```
+
+#### ES6新特性
+
+??（空值合并操作符）
+
+```javascript
+//当左侧值为 null 或 undefined 时，返回 ?? 符号右边的值
+'hello world' ?? 'hi' 
+// 'hello world'
+
+'' ?? 'hi' 
+// ''
+
+false ?? 'hi' 
+// false
+
+null ?? 'hi'  
+// 'hi'
+
+undefined ?? 'hi'
+// 'hi'
+```
+
+?.（可选链操作符）
+
+**允许读取位于连接对象链深处的属性的值，而不必明确验证链中的每个引用是否有效。**
+
+```javascript
+let network = {
+	chain: 1,
+	name: 'ethereum'
+}
+let res = network?.name
+// 返回 ethereum
+
+let customer = {
+  name: "Carl",
+  details: {
+    age: 82,
+    location: "Paradise Falls" // details 的 address 属性未有定义
+  }
+};
+let customerCity = customer.details?.address?.city;
+// 由于 details 中 address 属性未有定义, 因此返回 undefined
+```
+
+
+
