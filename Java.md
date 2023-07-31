@@ -595,3 +595,31 @@ Method[] methods2 = System.class.getMethods();
 ```
 
 “注意，如果你想反射访问私有字段和（构造）方法的话，需要使用 `Constructor/Field/Method.setAccessible(true)` 来绕开 Java 语言的访问限制。”
+
+#### 视图-view
+**ModelAndView**	
+
+```java
+@RequestMapping(params = "graph")
+public ModelAndView graph(HttpServletRequest req, String processId,String processRouteid) {
+    // 关系图
+    String page = "com/wise/gemmes/processroute/drawPage";
+    if(processRouteid!=null&&!processRouteid.equals("")){
+        ProcessRouteEntity processRouteEntity= systemService.getEntity(ProcessRouteEntity.class,processRouteid );
+        req.setAttribute("state", processRouteEntity.getUpdateState());
+    }
+    return new ModelAndView(page).addObject("processId", processRouteid);
+}
+//ModelAndView上方法addObject添加的属性，通过ViewResolver等处理最后添加到request中，与request.setAttribute添加属性效果一致
+```
+
+**String**
+
+```java
+@RequestMapping(params = "goSelectBom")
+public String goSelectBom(HttpServletRequest req, String id,String updateState) {
+    req.setAttribute("id",id);
+    req.setAttribute("updateState",updateState);
+    return "com/wise/gemmes/processroute/selectBom";
+}
+```
