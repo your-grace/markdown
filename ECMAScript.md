@@ -112,8 +112,9 @@ function getData() {
 
 ??（空值合并操作符）
 
+**当左侧值为 \*null\* 或 \*undefined\* 时，返回 ?? 符号右边的值**
+
 ```javascript
-//当左侧值为 null 或 undefined 时，返回 ?? 符号右边的值
 'hello world' ?? 'hi' 
 // 'hello world'
 
@@ -152,6 +153,37 @@ let customer = {
 let customerCity = customer.details?.address?.city;
 // 由于 details 中 address 属性未有定义, 因此返回 undefined
 ```
+#### 判断设备是PC端 or 移动端
 
+```javascript
+function isMobile() {
+    let userAgentInfo = navigator.userAgent;
+    let Agents = ['Android', 'iPhone', 'SymbianOS', 'Windows Phone', 'iPad', 'iPod'];
+    let getArr = Agents.filter(i => userAgentInfo.includes(i));
+    return getArr.length ? true : false;
+}
+```
 
+```javascript
+var ua = navigator.userAgent;
+var ipad = ua.match(/(iPad).*OS\s([\d_]+)/),
+    isIphone = !ipad && ua.match(/(iPhone\sOS)\s([\d_]+)/),
+    isAndroid = ua.match(/(Android)\s+([\d.]+)/),
+    isMobile = isIphone || isAndroid;
+    if(isMobile) {
+        location.href = 'http://m.baidu.com';
+    }else{
+        location.href = 'http://www.baidu.com';
+    ｝
+    return;
+    //或者单独判断iphone或android
+    if(isIphone){
+        console.log("iphone访问");
+    }else if(isAndroid){
+        console.log("Android访问");
+    }else{
+        console.log("非iphone或Android访问");
+    }
+}
+```
 
