@@ -187,3 +187,35 @@ var ipad = ua.match(/(iPad).*OS\s([\d_]+)/),
 }
 ```
 
+#### 浏览器静态资源更新
+
+**时间戳**
+
+```html
+<link rel="stylesheet" href="~/XXX.css?time='+new Date().getTime()+'"> <script src="~/XXX.js?time='+new Date().getTime()+'"></script>
+```
+
+**webpack hash**
+
+```js
+import { defineConfig } from 'vite';
+ export default defineConfig({
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: '[name].[hash].js',
+        chunkFileNames: '[name].[chunkhash].js',
+        assetFileNames: '[name].[contenthash].[ext]',
+      },
+    },
+  },
+});
+```
+
+**vite热模块替换（HMR）**
+
+当静态文件发生变化时，vite会根据模块的依赖关系进行增量更新。它通过使用ES模块的特性，利用浏览器的原生模块加载器来实现热模块替换。具体原理如下：  
+1. 当文件发生变化时，vite会通知浏览器重新加载发生变化的模块。 
+2. 浏览器会使用HTTP请求重新获取变化的模块文件。 
+3. 变化的模块文件会被浏览器加载和执行。 
+4. 通过HMR接口，更新的模块会被注入到应用程序中，替换旧的模块。 
