@@ -1,20 +1,20 @@
 ```tex
 静态初始器（静态块）Static Initializer	初始化操作顺序（加载类之后和首次使用之前）：静态代码-对象代码-构造函数
 实例化方式：new语句 反射 clone()方法 反序列化readObject
-JMM:Java Memory Model
+JMM:Java Memory Model-java内容模型
 无序列化：transient
 共享不稳定可见性：volatile（禁止指令进行重排序优化），修饰变量对所有线程可见，保证修饰变量可见性和顺序性
 重量级锁：synchronized
 原子性：Atomic+包装类型	
-独占：Exclusive
-HQL:Hibernate Query Langauage	
+独占：Exclusive	获得-acquired	park-暂停	unpark-恢复
+HQL:Hibernate Query Langauage	cas-compare and swap
 getSession():createQuery、save、saveOrUpdate、delete、update、createCriteria、createSQLQuery
 AbstractQueuedSynchronizer：抽象队列同步器-AQS
 CAS：Compare And Swap
 独占方式：tryAcquire-tryRelease
 共享方式：tryAcquireShared-tryReleaseShared
 组合方式：ReentrantReadWriteLock
-内存溢出：out of memory
+内存溢出-OOM：out of memory
 CPU密集型：N+1	I/O密集型：2N
 happens-before规则（JSR 133）前一个操作的结果对后一个操作是可见的，无论这两个操作是否在同一个线程里	
 并发编程三个重要特性：原子性（synchronized/lock）、可见性（synchronized/volatile/lock）、有序性
