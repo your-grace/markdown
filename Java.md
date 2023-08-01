@@ -623,3 +623,92 @@ public String goSelectBom(HttpServletRequest req, String id,String updateState) 
     return "com/wise/gemmes/processroute/selectBom";
 }
 ```
+
+#### CriteriaQuery
+
+```java
+@RequestMapping(params = "routeFilesdatagrid")
+public void routeFilesdatagrid(RouteFilesEntity routeFilesEntity,HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid,String routeId) {
+    CriteriaQuery cq = new CriteriaQuery(RouteFilesEntity.class, dataGrid);
+    try{
+        cq.add(Restrictions.eq("sourceId",routeId));
+        if(StringUtils.isNotEmpty(routeFilesEntity.getType())){
+            cq.add(Restrictions.eq("type", routeFilesEntity.getType()));
+        }
+        if(StringUtils.isNotEmpty(routeFilesEntity.getFileName())){
+            cq.add(Restrictions.like("fileName", routeFilesEntity.getFileName(), MatchMode.ANYWHERE));
+        }
+    }catch (Exception e) {
+        throw new BusinessException(e.getMessage());
+    }
+    cq.add();
+    this.processRouteService.getDataGridReturn(cq, true);
+    TagUtil.datagrid(response, dataGrid);
+}
+```
+#### hql
+```java
+@RequestMapping(params = "processdatagrid")
+public void processdatagrid(ProcessRouteProcessRelation processroute, HttpServletRequest request, HttpServletResponse response, DataGrid dataGrid,String processRouteid){
+    String hql="from ProcessRouteProcessRelation where 1=1";
+    if(processRouteid.equals("")&&processRouteid==""){
+    	hql=hql+" and processRoute.id='0'";
+    }else{
+    	hql=hql+" and processRoute.id='"+processRouteid+"'";
+    }
+    if(processroute.getErpProcess() != null){
+        if(StringUtils.isNotEmpty(processroute.getErpProcess().getProcessNumber())){
+            hql=hql+" and erpProcess.processNumber like '%"+processroute.getErpProcess().getProcessNumber()+"%'";
+        }
+        if(StringUtils.isNotEmpty(processroute.getErpProcess().getProcessName())){
+            hql=hql+" and erpProcess.processName like '%"+processroute.getErpProcess().getProcessName()+"%'";
+        }
+        if(StringUtils.isNotEmpty(processroute.getErpProcess().getProcessDescribe())){
+            hql=hql+" and erpProcess.processDescribe like '%"+processroute.getErpProcess().getProcessDescribe()+"%'";
+        }
+        if(StringUtils.isNotEmpty(processroute.getErpProcess().getwFocus())){
+            hql=hql+" and erpProcess.wFocus='"+processroute.getErpProcess().getwFocus()+"'";
+        }
+        if(StringUtils.isNotEmpty(processroute.getErpProcess().getCheckProcess())){
+            hql=hql+" and erpProcess.checkProcess='"+processroute.getErpProcess().getCheckProcess()+"'";
+        }
+        if(processroute.getErpProcess().getDepart() != null){
+            if(StringUtils.isNotEmpty(processroute.getErpProcess().getDepart().getDepartname())){
+                hql=hql+" and erpProcess.depart.departname like '%"+processroute.getErpProcess().getDepart().getDepartname()+"%'";
+            }
+        }
+    }
+    hql=hql+" order by processOrder,erpProcess.processNumber";
+    List<ProcessRouteProcessRelation> list = systemService.findByQueryString(hql,dataGrid);
+    dataGrid.setResults(list);
+    Map<String, Map<String, Object>> ExtMap = new HashMap<String, Map<String, Object>>();
+    for (ProcessRouteProcessRelation process : list){
+        String hqkprp=" from PrpFlowEntity where processroute.id='"+process.getId()+"'";
+        List<PrpFlowEntity>PrpFlowEntityList=systemService.findByQueryString(hqkprp);
+        String returnmsg="";
+        for(int i=0;i<PrpFlowEntityList.size();i++){
+            if(PrpFlowEntityList.get(i).getParentId()!="0"){
+                ProcessRouteProcessRelation processRouteProcessRelation=  systemService.getEntity(ProcessRouteProcessRelation.class, PrpFlowEntityList.get(i).getParentId());
+                if(processRouteProcessRelation!=null){
+                    if(returnmsg==""){
+                        returnmsg=processRouteProcessRelation.getErpProcess().getProcessName();
+                    }else{
+                        returnmsg=returnmsg+","+processRouteProcessRelation.getErpProcess().getProcessName();
+                    }
+                }
+            }
+        }
+        Map m = new HashMap();
+        if(process.getErpProcess()!=null){
+            m.put("processNumber", process.getErpProcess().getProcessNumber());
+            m.put("processName", process.getErpProcess().getProcessName());
+            m.put("processDescribe", process.getErpProcess().getProcessDescribe());
+            m.put("departname", process.getErpProcess().getDepart().getDepartname());
+        }
+        m.put("parentid", returnmsg);
+
+        ExtMap.put(process.getId(), m);
+    }
+    TagUtil.datagrid(response, dataGrid,ExtMap);
+}
+```
