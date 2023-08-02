@@ -4,9 +4,9 @@
 JMM:Java Memory Model-java内容模型
 无序列化：transient
 共享不稳定可见性：volatile（禁止指令进行重排序优化），修饰变量对所有线程可见，保证修饰变量可见性和顺序性
-重量级锁：synchronized
-原子性：Atomic+包装类型	
-独占：Exclusive	获得-acquired	park-暂停	unpark-恢复
+重量级锁：synchronized	BlockingQueue-阻塞队列：生产者消费者存放元素容器
+原子性：Atomic+包装类型		Pair-键值对容器
+独占：Exclusive	获得-acquired	park-阻塞线程	unpark-唤醒线程
 HQL:Hibernate Query Langauage	cas-compare and swap
 getSession():createQuery、save、saveOrUpdate、delete、update、createCriteria、createSQLQuery
 AbstractQueuedSynchronizer：抽象队列同步器-AQS
