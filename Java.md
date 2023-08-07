@@ -2,7 +2,7 @@
 静态初始器（静态块）Static Initializer	初始化操作顺序（加载类之后和首次使用之前）：静态代码-对象代码-构造函数
 实例化方式：new语句 反射 clone()方法 反序列化readObject
 JMM:Java Memory Model-java内容模型
-无序列化：transient
+无序列化：transient	即时编译器：JIt（Just-In-Time）
 共享不稳定可见性：volatile（禁止指令进行重排序优化），修饰变量对所有线程可见，保证修饰变量可见性和顺序性
 重量级锁：synchronized	BlockingQueue-阻塞队列：生产者消费者存放元素容器
 原子性：Atomic+包装类型		Pair-键值对容器
