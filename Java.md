@@ -48,7 +48,8 @@ StandardCharsets.UTF_8 枚举字符编码
 
 ```bash
 mvn clean install package '-Dmaven.test.skip=true'
-xxd hello.class	#给定文件转换成十六进制形式
+xxd hello.class	#给定文件转换成十六进制形式，在bash终端中使用
+javap -v -p Main.class	#反编译命令
 ```
 
 #### Spring
