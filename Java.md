@@ -2,7 +2,7 @@
 静态初始器（静态块）Static Initializer	初始化操作顺序（加载类之后和首次使用之前）：静态代码-对象代码-构造函数
 实例化方式：new语句 反射 clone()方法 反序列化readObject
 JMM:Java Memory Model-java内容模型
-无序列化：transient	即时编译器：JIt（Just-In-Time）
+无序列化：transient	即时编译器：JIt（Just-In-Time）	预先编译：AOT(Ahead-Of-Time)
 共享不稳定可见性：volatile（禁止指令进行重排序优化），修饰变量对所有线程可见，保证修饰变量可见性和顺序性
 重量级锁：synchronized	BlockingQueue-阻塞队列：生产者消费者存放元素容器
 原子性：Atomic+包装类型		Pair-键值对容器
@@ -44,12 +44,20 @@ javap -c Demo.class	反编译class文件为字节码指令
 常用工具类：Scanner Arrays StringUtils Objects Collections Hutool Guava commons-lang3
 java8引入语法：类名::方法名-方法名后没有()
 StandardCharsets.UTF_8 枚举字符编码
+书：Effective Java
 ```
 
 ```bash
 mvn clean install package '-Dmaven.test.skip=true'
 xxd hello.class	#给定文件转换成十六进制形式，在bash终端中使用
 javap -v -p Main.class	#反编译命令
+jps	#当前用户的Java进程
+#默认**显示 pid **以及 main 方法对应的 class 名称
+#-v：输出传递给 JVM 的参数
+#-l： 输出 main 方法对应的 class 的完整 package 名
+#HSDB（Hotspot Debugger)，是一款内置于 SA 中的 GUI 调试工具，可用于调试 JVM 运行时数据，从而进行故障排除
+#windows
+$ java -classpath "%JAVA_HOME%/lib/sa-jdi.jar" sun.jvm.hotspot.HSDB
 ```
 
 #### Spring
@@ -714,3 +722,13 @@ public void processdatagrid(ProcessRouteProcessRelation processroute, HttpServle
     TagUtil.datagrid(response, dataGrid,ExtMap);
 }
 ```
+
+#### 基于栈的指令集与基于寄存器的指令集
+
+Java 编译器输出的指令流，基本上是一种基于栈的指令集架构。基于栈的指令集主要的优点就是可移植，寄存器由硬件直接提供，程序直接依赖这些硬件寄存器则不可避免的要受到硬件约束。栈架构的指令集还有一些其他优点，比如相对更加紧凑（字节码中每个字节就对应一条指令，而多地址指令集中还需要存放参数）、编译实现更加简单（不需要考虑空间分配的问题，所有空间都是在栈上操作）等。
+
+栈架构指令集的主要缺点是执行速度相对来说会稍慢一些。所有主流物理机的指令集都是寄存器架构也从侧面印证了这一点。
+
+虽然栈架构指令集的代码非常紧凑，但是完成相同功能需要的指令集数量一般会比寄存器架构多，因为出栈、入栈操作本身就产生了相当多的指令数量。更重要的是，栈实现在内存中，频繁的栈访问也意味着频繁的内存访问，相对于处理器来说，内存始终是执行速度的瓶颈。由于指令数量和内存访问的原因，所以导致了栈架构指令集的执行速度会相对较慢。
+
+正是基于上述原因，Android 虚拟机中采用了基于寄存器的指令集架构。不过有一点不同的是，前面说的是物理机上的寄存器，而 Android 上指的是虚拟机上的寄存器。
