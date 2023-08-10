@@ -44,11 +44,15 @@ javap -c Demo.class	反编译class文件为字节码指令
 常用工具类：Scanner Arrays StringUtils Objects Collections Hutool Guava commons-lang3
 java8引入语法：类名::方法名-方法名后没有()
 StandardCharsets.UTF_8 枚举字符编码
+MinorGC-新生代GC	MajorGC-老年代GC
+MCS-并发标记清除（Concurrent Mark Sweep）
 书：Effective Java
 ```
 
 ```bash
 mvn clean install package '-Dmaven.test.skip=true'
+javac -g Test.java	#编译为class文件
+javap -verbose Test.class	#查看class文件格式
 xxd hello.class	#给定文件转换成十六进制形式，在bash终端中使用
 javap -v -p Main.class	#反编译命令
 jps	#当前用户的Java进程
