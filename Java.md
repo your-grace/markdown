@@ -62,6 +62,9 @@ jps	#当前用户的Java进程
 #HSDB（Hotspot Debugger)，是一款内置于 SA 中的 GUI 调试工具，可用于调试 JVM 运行时数据，从而进行故障排除
 #windows
 $ java -classpath "%JAVA_HOME%/lib/sa-jdi.jar" sun.jvm.hotspot.HSDB
+java -Dspring.config.location=..\config\application.properties -jar kkFileView-4.0.0.jar -> ..\log\kkFileView.log
+#使用指定的配置文件，启动jar文件，标准输出重定向到日志文件中。
+#该命令允许以自定义的配置启动该应用程序，并将日志输出到指定的日志文件中。
 ```
 
 #### Spring
