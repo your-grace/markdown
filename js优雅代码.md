@@ -1,3 +1,12 @@
+#### URL编码解码
+
+```javascript
+//编码
+encodeURIComponent("url")
+//解码
+decodeURIComponent("url")
+```
+
 #### 数组去重
 
 ```javascript
