@@ -1,4 +1,4 @@
-```
+```tex
 闭包（closure）：有权访问另一个函数作用域中变量的函数。
 shift:移除数组第一项|pop:移除数组最后一项|unshift:向数组开头添加元素|push:向数组结尾添加元素
 [].slice.call(arguments)循环遍历arguments并复制到类数组的新数组
@@ -6,6 +6,7 @@ Object.assign(target:{},source1,source2)将可枚举属性的值的一个或多�
 Object.hasOwnProperty(property)判断对象中是否有对象的属性
 函数柯里化|函数反柯里化|函数防抖|函数节流
 curry debounce防抖-电梯每次上人（重置等待时间） throttle节流-技能冷却-失效一段时间
+防抖适用于多次触发只需执行一次的情况，而节流适用于限制连续触发事件的执行频率。
 this:从自己的作用域链的上一层继承this
 ```
 
