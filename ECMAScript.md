@@ -220,3 +220,47 @@ import { defineConfig } from 'vite';
 2. 浏览器会使用HTTP请求重新获取变化的模块文件。 
 3. 变化的模块文件会被浏览器加载和执行。 
 4. 通过HMR接口，更新的模块会被注入到应用程序中，替换旧的模块。 
+
+### apply 源码解析 es3 es6
+
+```javascript
+function add(c, d) {
+  return this.a + this.b + c + d;
+}
+const obj = { a: 1, b: 2 };
+// ES3 apply 实现
+Function.prototype.es3apply = function (context, arr) {
+  var context = context || window;
+  context.fn = this;
+  var result;
+  if (!arr) {
+    result = context.fn();
+  } else {
+    // 获取参数
+    var args = [];
+    for (var i = 0, len = arr.length; i < len; i++) {
+      args.push('arr[' + i + ']');
+    }
+    // 执行函数
+    result = eval('context.fn(' + args + ')')
+  }
+  delete context.fn;
+  return result
+}
+console.log(add.apply(obj, [1, 2])); // 6
+// ES6 apply 实现
+Function.prototype.es6apply = function (context, arr) {
+    var context = context || window;
+    context.fn = this;
+    var result;
+    if (!arr) {
+        result = context.fn();
+    } else {
+        if (!(arr instanceof Array)) throw new Error('params must be array');
+        result = context.fn(...arr);
+    }
+    delete context.fn;
+    return result;
+}
+console.error(add.es6apply(obj, [1, 2])); // 6
+```
