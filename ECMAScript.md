@@ -317,3 +317,56 @@ function showTop  () {
 window.onscroll = throttle(showTop,1000) 
 ```
 
+#### [迭代异步生成器](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/for-await...of#迭代异步生成器)
+
+```javascript
+//for await... of	获得API 的响应值的大小
+async function* streamAsyncIterator(stream) {
+  const reader = stream.getReader();
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) {
+        return;
+      }
+      yield value;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
+// 从 url 获取数据并使用异步 generator 来计算响应值的大小
+async function getResponseSize(url) {
+  const response = await fetch(url);
+  // Will hold the size of the response, in bytes.
+  let responseSize = 0;
+  // 使用 for-await-of 循环。异步 generator 会遍历响应值的每一部分
+  for await (const chunk of streamAsyncIterator(response.body)) {
+    // Incrementing the total response length.
+    responseSize += chunk.length;
+  }
+
+  console.log(`Response Size: ${responseSize} bytes`);
+  // expected output: "Response Size: 1071472"
+  return responseSize;
+}
+getResponseSize("https://jsonplaceholder.typicode.com/photos");
+```
+
+```javascript
+//for ... in	hasOwnProperty-继承的属性不显示
+var triangle = { a: 1, b: 2, c: 3 };
+function ColoredTriangle() {
+  this.color = "red";
+}
+ColoredTriangle.prototype = triangle;
+var obj = new ColoredTriangle();
+for (var prop in obj) {
+  if (obj.hasOwnProperty(prop)) {
+    console.log(`obj.${prop} = ${obj[prop]}`);
+  }
+}
+// Output:
+// "obj.color = red"
+```
+
