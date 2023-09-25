@@ -265,6 +265,40 @@ Function.prototype.es6apply = function (context, arr) {
 console.error(add.es6apply(obj, [1, 2])); // 6
 ```
 
+#### 元编程
+
+```javascript
+//代理 Proxy
+let handler = {
+  get: function (target, name) {
+    return name in target ? target[name] : 42;
+  },
+};
+let p = new Proxy({}, handler);
+p.a = 1;
+console.log(p.a, p.b); // 1, 42
+//apply函数
+Function.prototype.apply.call(Math.floor, undefined, [1.75]);
+//反射Reflect
+Reflect.apply(Math.floor, undefined, [1.75]);
+// 1;
+Reflect.apply(String.fromCharCode, undefined, [104, 101, 108, 108, 111]);
+// "hello"
+Reflect.apply(RegExp.prototype.exec, /ab/, ["confabulation"]).index;
+// 4
+Reflect.apply("".charAt, "ponies", [3]);
+// "i"
+//检查属性是否定义成功
+if (Reflect.defineProperty(target, property, attributes)) {
+  // success
+} else {
+  // failure
+}
+let obj = {}
+Reflect.defineProperty(obj, 'x', {value: 7})  // true
+obj.x                                         // 7
+```
+
 #### 防抖(debounce)
 
 ```javascript
@@ -354,7 +388,7 @@ getResponseSize("https://jsonplaceholder.typicode.com/photos");
 ```
 
 ```javascript
-//for ... in	hasOwnProperty-继承的属性不显示
+//for ... in	hasOwnProperty-继承的属性不显示:prototype
 var triangle = { a: 1, b: 2, c: 3 };
 function ColoredTriangle() {
   this.color = "red";
@@ -370,3 +404,29 @@ for (var prop in obj) {
 // "obj.color = red"
 ```
 
+```javascript
+//动态导入
+const main = document.querySelector("main");
+for (const link of document.querySelectorAll("nav > a")) {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    import("/modules/my-module.js")
+      .then((module) => {
+        module.loadPageInto(main);
+      })
+      .catch((err) => {
+        main.textContent = err.message;
+      });
+  });
+}
+//支持await关键字
+(async () => {
+  if (somethingIsTrue) {
+    const {
+      default: myDefault,
+      foo,
+      bar,
+    } = await import("/modules/my-module.js");
+  }
+})();
+```
