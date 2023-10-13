@@ -730,6 +730,177 @@ public void processdatagrid(ProcessRouteProcessRelation processroute, HttpServle
 }
 ```
 
+#### HQL查询
+
+##### 1.分页查询数据
+
+```java
+int startRow = (dataGrid.getPage() > 0 ? dataGrid.getPage() - 1 : 0) * dataGrid.getRows();
+Query query = systemService.getSession().createQuery(hql);
+query.setMaxResults(dataGrid.getRows());
+query.setFirstResult(startRow);
+List<GmTbProcessingEntity> processingEntities = query.list();
+```
+
+##### 2.使用占位参数
+
+```java
+String hql="from Users where uid=? or uname=?";
+Query query = session.createQuery(hql);
+//索引从0开始
+query.setInteger(0, 3);//query.setParameter(0, 3);
+query.setString(1, "张三");//query.setParameter(1, "张三");
+List<Users> list = query.list();
+for (Users user : list) {
+    System.out.println(user);
+}
+```
+
+##### 3.使用参数名称
+
+```java
+String hql = "from Users where uid=:no1 or uid=:no2";
+Query query = session.createQuery(hql);
+query.setInteger("no1", 1);
+query.setInteger("no2", 3);
+//....
+```
+
+##### 4.可以使用点位参数和名称参数混合使用
+
+```java
+String hql = "from User where uid=? or uid=:no2";
+Query query = session.createQuery(hql);
+query.setInteger(0, 7788);
+query.setInteger("no2", 7566);
+//....
+//使用点位参数和名称参数混合使用，所有点位参数必须放在前面，一旦有名称参数出现，其后将不能再出现占位参数
+```
+
+##### 5.连接查询
+
+```java
+String hql="SELECT e.ename, e.sal, e.dept.dname FROM Emp e";
+//HQL连接查询
+String hql="SELECT e.ename, e.sal, d.dname FROM Emp e JOIN e.dept d";
+String hql = "SELECT e FROM Emp e JOIN e.dept"; //JOIN将没有意义
+String hql = "FROM Emp e JOIN e.dept";
+Query query = session.createQuery(hql);
+List<Object[]> list = query.list();
+//List集合中的数组中会保存两个元素：
+//0：主数据(Emp)
+//1：从数据(Dept)
+//查询编号为7788的员工信息，同时将对应的dept信息和manager信息查询并保存在对应的子属性中
+String hql = "FROM Emp e JOIN FETCH e.dept d JOIN FETCH e.manager m WHERE e.empno=7788";
+Query query = session.createQuery(hql);
+Emp emp = (Emp) query.uniqueResult();
+System.out.println(emp);
+System.out.println(emp.getManager());
+System.out.println(emp.getDept());
+```
+
+##### 6.分页
+
+```java
+String hql = "from Users";
+Query query = session.createQuery(hql);
+query.setFirstResult(0);
+query.setMaxResults(2);
+```
+
+#### QBC（Query By Criteria）
+
+1. Restrictions 条件限制
+2. Projections 列设射
+3. Order 排序
+##### 1.查询实现
+
+```java
+Criteria criteria = session.createCriteria(Users.class);
+//session.createCriteria("entity.Users");
+//session.createCriteria(Users.class, "别名");
+List<Dept> list = criteria.list();
+//查询单行结果（如果结果有两行或更多，会报错）
+Object uniqueResult = criteria.uniqueResult();
+```
+
+##### 2. Projections 列投射
+```java
+//查询uname属性
+Criteria criteria = session.createCriteria(Users.class);
+PropertyProjection property = Projections.property("name");
+criteria.setProjection(property);
+List<Object> result = criteria.list();
+//查询uname, upwd属性
+Criteria criteria = session.createCriteria(Users.class);
+//1.创建投射列表
+ProjectionList projectionList = Projections.projectionList();
+//2.向投射列表中添加列投射
+PropertyProjection property1 = Projections.property("uname");
+PropertyProjection property2 = Projections.property("upwd");
+projectionList.add(property1).add(property2);
+//3.将投射列表设置到准则中
+criteria.setProjection(projectionList);
+List<Object> result = criteria.list();
+```
+##### 3.Restrictions 条件限制
+```java
+Criteria criteria = session.createCriteria(Users.class);
+Criterion notNull = Restrictions.isNotNull("comm");
+criteria.add(notNull); //添加一个条件（如果添加了多个条件，默认条件之间使用and连接）
+List<Users> list = criteria.list();
+//Restrictions-eq、allEq、gt、ge、lt、le、between、like、in、and、or、isNull、sqlRestriction（限定查询）、not
+```
+##### 4.排序
+```java
+Criteria criteria = session.createCriteria(Dept.class);
+criteria.addOrder(Order.asc("name")).addOrder(Order.desc("loc"));
+//SELECT * FROM DEPT ORDER BY name ASC, loc DESC 默认升序ASC
+```
+##### 5.分页查询
+```java
+Criteria criteria = session.createCriteria(Dept.class);
+int pageNum = 2, pageSize = 5;
+criteria.setFirstResult((pageNum-1)*pageSize); //查询起始行下标
+criteria.setMaxResults(pageSize); //查询的最大行数
+List list = criteria.list();
+//setFirstResult方法和setMaxResults方法同样可以在SQLQuery及Query类型上使用
+```
+##### 6.创建外键表关联对象
+```java
+CriteriaQuery cq = new CriteriaQuery(PrpPindicItemsEntity.class, dataGrid);
+cq.createAlias("pindicId", "ppc");
+cq.add(Restrictions.eq("ppc.useState","1"));
+```
+
+#### 原生SQL查询
+##### 1.查询
+```java
+String sql = "select uid,uname,upwd from _users";
+List list = session.createSQLQuery(sql).list();
+for(Object obj : list){
+    System.out.println(obj);
+}
+```
+##### 2.addEntity()
+```java
+String sql = "select uid,uname,upwd from _users";
+// addEntity()可以告诉Hibernate你想要封装成对象的类型，然后自动为你封装
+SQLQuery query = session.createSQLQuery(sql).addEntity(Users.class);
+List<User> list = query.list();
+for(Users user : list){
+	System.out.println(user.getUname());
+}
+````
+
+##### 3.uniqueResult
+```java
+String sql = "select uid,uname,upwd from _users where uid = 2";
+SQLQuery query = session.createSQLQuery(sql).addEntity(Users.class);
+Users user = (Users) query.uniqueResult();//返回单一对象
+System.out.println(user.getUname());
+```
+
 #### 基于栈的指令集与基于寄存器的指令集
 
 Java 编译器输出的指令流，基本上是一种基于栈的指令集架构。基于栈的指令集主要的优点就是可移植，寄存器由硬件直接提供，程序直接依赖这些硬件寄存器则不可避免的要受到硬件约束。栈架构的指令集还有一些其他优点，比如相对更加紧凑（字节码中每个字节就对应一条指令，而多地址指令集中还需要存放参数）、编译实现更加简单（不需要考虑空间分配的问题，所有空间都是在栈上操作）等。
