@@ -286,3 +286,77 @@ this.$emit("change",i);
 2. `$emit("change", i)`：这行代码触发了一个名为`change`的自定义事件，并将`i`作为事件的参数传递。`change`事件通常用于在输入框的值发生变化时进行一些额外的操作或处理。父组件或其他组件可以通过监听`change`事件来获取输入框的最新值，并执行相应的逻辑，如校验、提交表单等。
 
 需要注意的是，`$emit`是Vue实例提供的方法，用于在组件中触发自定义事件。通过触发自定义事件，可以实现组件之间的通信和数据传递。父组件或其他监听了这些事件的组件可以通过模板中的指令（如`v-model`）或监听器来接收和处理这些事件。
+
+#### nextTick
+##### 使用场景1.访问更新后的DOM
+```vue
+<template>
+  <div>
+    <p ref="msg">Hello, World!</p>
+  </div>
+</template>
+<script>
+export default {
+  mounted() {
+    // 此时访问DOM元素是无法获取到更新后的text值，需要使用nextTick方法
+    console.log(this.$refs.msg.innerText); // 输出：Hello, World!
+    this.$nextTick(() => {
+      console.log(this.$refs.msg.innerText); // 输出：Hello, Vue!
+    });
+  },
+  methods: {
+    updateMessage() {
+      this.$refs.msg.innerText = 'Hello, Vue!';
+    }
+  }
+}
+</script>
+```
+##### 使用场景2.在更新后执行某些操作
+```vue
+<template>
+  <div>
+    <button @click="changeColor">Change Color</button>
+    <p :style="{ color: textColor }">Hello, World!</p>
+  </div>
+</template>
+<script>
+export default {
+  data() {
+    return {
+      textColor: 'black'
+    }
+  },
+  methods: {
+    changeColor() {
+      // 使用nextTick确保视图已经更新完成
+      this.$nextTick(() => {
+        this.textColor = 'red';
+      });
+    }
+  }
+}
+</script>
+```
+##### 原理
+```text
+核心技术：
+1.Promise	2.microtask
+执行顺序：
+1. 当我们调用$nextTick()方法时，Vue.js会将回调函数添加到一个内部的回调数组中。 
+2. 如果当前没有处于等待状态的更新操作，则将一个异步的微任务添加到微任务队列中。 
+3. 在当前宏任务执行完毕后，开始执行微任务队列中的所有微任务，包括$nextTick()的回调函数。 
+4. 在执行每个微任务之前，Vue.js会进行一些性能优化的处理。它会检测浏览器是否支持原生的Promise对象，如果支持，则使用Promise来创建微任务；如果不支持，则使用MutationObserver来创建微任务。 
+5. 执行微任务队列中的所有微任务，依次执行$nextTick()的回调函数。 
+6. 在每个回调函数执行完毕后，Vue.js会清空回调数组，以便下一次调用$nextTick()时重新填充回调函数。 
+7. 在微任务执行完毕后，浏览器会进行UI Render，更新页面的可视化效果。 
+总结起来，$nextTick()的执行顺序是在当前宏任务执行完毕后，立即执行微任务队列中的所有微任务，包括$nextTick()的回调函数。这保证了回调函数能够在DOM更新后立即执行，而不需要等待下一个宏任务。  
+需要注意的是，由于微任务的执行优先级高于宏任务，所以$nextTick()的回调函数会在其他宏任务之前执行。这确保了回调函数能够及时获取到DOM更新后的状态，并进行相应的操作。
+
+微任务和宏任务执行顺序：
+1. 执行一个宏任务（例如整体代码块）。 
+2. 检查微任务队列，如果有微任务，则依次执行所有微任务直到队列为空。 
+3. 执行浏览器UI Render，更新页面的可视化效果。 
+4. 执行下一个宏任务（如果有的话），并重复上述步骤。 
+总结起来，宏任务和微任务的执行顺序是交替进行的（事件循环机制）。每次执行一个宏任务后，会检查并执行所有微任务，然后进行UI Render，然后再执行下一个宏任务。
+```
