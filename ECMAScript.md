@@ -499,4 +499,68 @@ const secondAccount = makeWithdraw(20); // "I will do bad things with your money
 console.log(secondAccount.withdraw(30)); // "Insufficient money"
 console.log(secondAccount.withdraw(20)); // 0
 ```
-
+#### 复制
+##### 浅拷贝
+```javascript
+//1.使用 Array.from() 或扩展运算符（spread operator）
+const originalArray = [1, 2, 3];
+const copiedArray1 = Array.from(originalArray);
+const copiedArray2 = [...originalArray];
+console.log(copiedArray1); // [1, 2, 3]
+console.log(copiedArray2); // [1, 2, 3]
+//2.使用 slice() 方法
+const originalArray = [1, 2, 3];
+const copiedArray = originalArray.slice();
+console.log(copiedArray); // [1, 2, 3]
+```
+##### 深拷贝
+```javascript
+//1.递归实现深度复制
+function deepCopy(obj) {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+  let copy;
+  if (Array.isArray(obj)) {
+    copy = [];
+    for (let i = 0; i < obj.length; i++) {
+      copy[i] = deepCopy(obj[i]);
+    }
+  } else {
+    copy = {};
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        copy[key] = deepCopy(obj[key]);
+      }
+    }
+  }
+  return copy;
+}
+// 示例用法
+const originalObj = { 
+  name: 'John', 
+  age: 30, 
+  hobbies: ['reading', 'music']
+};
+const copiedObj = deepCopy(originalObj);
+copiedObj.name = 'Jane';
+copiedObj.hobbies.push('sports');
+console.log(originalObj); 
+// { name: 'John', age: 30, hobbies: [ 'reading', 'music' ] }
+console.log(copiedObj);   
+// { name: 'Jane', age: 30, hobbies: [ 'reading', 'music', 'sports' ] }
+//2.使用第三方库（如lodash）的cloneDeep()方法
+const _ = require('lodash');
+const originalObj = { 
+  name: 'John', 
+  age: 30, 
+  hobbies: ['reading', 'music']
+};
+const copiedObj = _.cloneDeep(originalObj);
+copiedObj.name = 'Jane';
+copiedObj.hobbies.push('sports');
+console.log(originalObj); 
+// { name: 'John', age: 30, hobbies: [ 'reading', 'music' ] }
+console.log(copiedObj);   
+// { name: 'Jane', age: 30, hobbies: [ 'reading', 'music', 'sports' ] }
+```
