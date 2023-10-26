@@ -363,4 +363,4 @@ export default {
 ##### nextTick与updated的区别
 > `$nextTick` 方法确保在下一次DOM更新循环结束之后执行回调函数。在数据修改后，Vue会重新渲染DOM，并在渲染完成后执行 `$nextTick` 的回调函数。这样可以确保在操作或访问DOM之前，DOM已经完成了渲染。 
 > `updated` 钩子函数是在组件的VNode更新完成后调用。当组件的数据发生变化，导致重新渲染组件的VNode时， `updated` 钩子函数会被触发。这意味着在 `updated` 钩子函数中，您可以访问到更新后的DOM元素。
-> 区别：都是数据修改后，可以获取新数据，`$nextTick`执行在渲染前，`updated`在渲染后
+> 区别：都是数据修改后，可以获取新数据，`$nextTick`在渲染前，`updated`在渲染后
