@@ -564,3 +564,55 @@ console.log(originalObj);
 console.log(copiedObj);   
 // { name: 'Jane', age: 30, hobbies: [ 'reading', 'music', 'sports' ] }
 ```
+#### 通用的柯里化函数
+```javascript
+var currying = function (fn) {
+    var args = [];
+    return function () {
+        if (arguments.length === 0) {
+            return fn.apply(this, args);
+        } else {
+            [].push.apply(args, arguments);//callee属性指代当前正在执行的函数
+            return arguments.callee;
+        }
+    }
+};
+var count= (function () {
+    var sum= 0;
+    return function () {
+        for (var i = 0; i < arguments.length; i++) {
+            sum+= arguments[i];
+        }
+        return sum;
+    }
+})();
+var count= currying(count); // 转化成 currying 函数
+count(100);count(200); count(300);  
+console.log(count());  // 求值并输出：600
+```
+#### 可传参的柯里化函数
+```javascript
+var currying = function (fn) {
+    var args = [];
+    /*将除了第一个参数fn之外的参数，存储到args中arguments本身是没有slice方法的，因此想取到arguments中除了第一项以外的参数
+      就要通过[].slice.call(arguments,1) 相当于把数组slice的方法，搬到arguments上*/
+    args = args.concat([].slice.call(arguments,1)); 
+    return function () {
+        if (arguments.length === 0) {
+            return fn.apply(this, args);
+        } else {
+            [].push.apply(args, arguments);//callee属性指代当前正在执行的函数
+            return arguments.callee;
+        }
+    }
+};
+```
+#### 通用的反柯里化函数
+```javascript
+var uncurrying= function (fn) {
+    return function () {
+        var args=[].slice.call(arguments,1);
+        return fn.apply(arguments[0],args);        
+    }    
+};
+```
