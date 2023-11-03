@@ -616,3 +616,20 @@ var uncurrying= function (fn) {
     }    
 };
 ```
+#### Object.create()
+Object.create() 静态方法以一个现有对象作为原型，创建一个新对象。
+```javascript
+//Object.create(proto)	 Object.create(proto,propertiesObject)
+const person = {
+  isHuman: false,
+  printIntroduction: function () {
+    console.log(`My name is ${this.name}. Am I human? ${this.isHuman}`);
+  },
+};
+const me = Object.create(person);
+me.name = 'Matthew'; // "name" is a property set on "me", but not on "person"
+me.isHuman = true; // Inherited properties can be overwritten
+me.printIntroduction();
+// Expected output: "My name is Matthew. Am I human? true".
+```
+![img](https://github.com/your-grace/markdown/blob/main/image/es/1.png?raw=true)
