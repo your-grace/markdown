@@ -162,6 +162,20 @@ ALTER TABLE gm_material AUTO_INCREMENT = 4067
 SET @new_id = 0;
 UPDATE your_table SET id = @new_id:=@new_id+1;
 ```
+#### 子查询交集查询
+```mysql
+SELECT
+-- 	gtp.task_batch_id
+* 
+FROM
+	( SELECT g.task_batch_id FROM gm_tb_processing g WHERE g.id = '40288155878d96cf01879342eb572ece' ) gtp,
+	( SELECT g2.product_inf_id, g2.task_batch_id FROM gm_workpiece g2 WHERE g2.TASK_PLAN_ID = '40288155876e2b2901876e96d91f0537' ) gw,
+	gm_product_infor gpi 
+WHERE
+	gtp.task_batch_id = gw.task_batch_id 
+	AND gpi.id = gw.product_inf_id 
+	AND gpi.product_number = 'YD0061'
+```
 
 #### 关键词
 
