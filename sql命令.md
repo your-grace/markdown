@@ -176,7 +176,32 @@ WHERE
 	AND gpi.id = gw.product_inf_id 
 	AND gpi.product_number = 'YD0061'
 ```
-
+#### case
+```mysql
+SELECT
+	gp2.ASS_INDIC_NAME,
+	CASE gp2.USE_TYPE 
+			WHEN '0' THEN '常规汇报' 
+			WHEN '1' THEN '设备数据补充' 
+			WHEN '2' THEN '检测判定指标' 
+			WHEN '3' THEN '设备汇报简码' 
+			WHEN '4' THEN '设备数据报表' 
+			WHEN '5' THEN '模板表头数据' 
+			WHEN '6' THEN '异常汇报' 
+			WHEN '7' THEN '模板表格数据' ELSE '其它' 
+	END AS useType,
+	gp1.ITEMS_NAME,
+CASE
+		gp1.INDIC_TYPE 
+		WHEN '9' THEN '引用' 
+		WHEN '10' THEN '指标指示查询' ELSE 'other' 
+	END AS indicType 
+FROM
+	gm_prp_pindic_items gp1
+	LEFT JOIN gm_prp_process_indicators gp2 ON gp1.PINDIC_ID = gp2.ID 
+WHERE
+	gp1.DATA_TYPE = '3'
+```
 #### 关键词
 
 ```
