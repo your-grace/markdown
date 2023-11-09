@@ -191,10 +191,11 @@ SELECT
 			WHEN '7' THEN '模板表格数据' ELSE '其它' 
 	END AS useType,
 	gp1.ITEMS_NAME,
+	gp1.INDIC_TYPE,
 CASE
 		gp1.INDIC_TYPE 
-		WHEN '9' THEN '引用' 
-		WHEN '10' THEN '指标指示查询' ELSE 'other' 
+		WHEN '9' THEN '模板指标查询' 
+		WHEN '10' THEN '模板指标汇报' ELSE 'other' 
 	END AS indicType 
 FROM
 	gm_prp_pindic_items gp1
