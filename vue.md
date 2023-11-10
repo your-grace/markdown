@@ -364,3 +364,65 @@ export default {
 > `$nextTick` 方法确保在下一次DOM更新循环结束之后执行回调函数。在数据修改后，Vue会重新渲染DOM，并在渲染完成后执行 `$nextTick` 的回调函数。这样可以确保在操作或访问DOM之前，DOM已经完成了渲染。 
 > `updated` 钩子函数是在组件的VNode更新完成后调用。当组件的数据发生变化，导致重新渲染组件的VNode时， `updated` 钩子函数会被触发。这意味着在 `updated` 钩子函数中，您可以访问到更新后的DOM元素。
 > 区别：都是数据修改后，可以获取新数据，`$nextTick`在渲染前，`updated`在渲染后
+
+####  透传attributes和v-model修饰符
+`attributes`内容：`class``style``v-on`，使用方式：`$attrs[foo-bar]`、`$attrs.onClick`
+作用于根元素/组件内`inheritAttrs:false`;指定作用元素设置：`v-bind="$attrs"`、全部 `v-bind="$attrs"` 特定`$attrs['foo-bar']/$attrs.onClick`
+单根节点组件自动透传 ,多根节点组件没有自动attribute透传，需`$attrs`显示绑定
+修饰符`modelModifiers`
+`App.vue`
+
+```vue
+<script>
+import MyComponent from './MyComponent.vue'
+export default {
+  components: { MyComponent },
+  data() {
+    return {
+      myText: ''
+    }
+  },
+  methods:{
+    test(){
+      this.myText = '透传attributes属性和事件'
+    }
+  }
+}
+</script>
+<template>
+  This input capitalizes everything you enter:
+  <MyComponent v-model.capitalize="myText" class="bold" @click="test" id="11"/>
+  <h4>{{myText}}</h4>
+</template>
+```
+`MyComponent.vue`
+```vue
+<script>
+export default {
+  props: {
+    modelValue: String,
+    modelModifiers: {
+      default: () => ({})
+    }
+  },
+  //inheritAttrs:false,
+  emits: ['update:modelValue'],
+  methods: {
+    emitValue(e) {
+      let value = e.target.value
+      if (this.modelModifiers.capitalize) {
+        value = value.charAt(0).toUpperCase() + value.slice(1)
+      }
+      this.$emit('update:modelValue', value)
+    }
+  }
+}
+</script>
+<template>
+  <input type="text" :value="modelValue" @input="emitValue" />
+  <h4 v-bind="$attrs">{{$attrs}}</h4>
+  <h4 @click="$attrs.onClick">{{$attrs}}</h4>
+  <h4>{{$attrs.onClick.name}}</h4>
+  <h4>{{modelModifiers}}</h4>
+</template>
+```
