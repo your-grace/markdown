@@ -105,3 +105,72 @@ default PageResult<T> selectPage(PageParam pageParam, @Param("ew") Wrapper<T> qu
 }
 ```
 
+#### 单表list
+
+```java
+default List<RouteDO> selectList(RouteExportReqVO reqVO) {
+    return selectList(new LambdaQueryWrapperX<RouteDO>()
+                      .likeIfPresent(RouteDO::getRouteNumber, reqVO.getRouteNumber())
+                      .likeIfPresent(RouteDO::getRouteName, reqVO.getRouteName())
+                      .eqIfPresent(RouteDO::getUseState, reqVO.getUseState())
+                      .eqIfPresent(RouteDO::getUpdateStatus, reqVO.getUpdateStatus())
+                      .eqIfPresent(RouteDO::getFinterid, reqVO.getFinterid())
+                      .betweenIfPresent(RouteDO::getCreateTime, reqVO.getCreateTime())
+                      .orderByDesc(RouteDO::getId));
+}
+```
+
+#### 单表分页
+
+```java
+default PageResult<RouteDO> selectPage2(RoutePageReqVO reqVO) {
+    return selectPage(reqVO, new LambdaQueryWrapperX<RouteDO>()
+                      .likeIfPresent(RouteDO::getRouteNumber, reqVO.getRouteNumber())
+                      .likeIfPresent(RouteDO::getRouteName, reqVO.getRouteName())
+                      .eqIfPresent(RouteDO::getUseState, reqVO.getUseState())
+                      .eqIfPresent(RouteDO::getUpdateStatus, reqVO.getUpdateStatus())
+                      .eqIfPresent(RouteDO::getFinterid, reqVO.getFinterid())
+                      .betweenIfPresent(RouteDO::getCreateTime, reqVO.getCreateTime())
+                      .orderByDesc(RouteDO::getId));
+}
+```
+
+#### 关联分页查询
+
+```java
+default PageResult<RouteRespVO> selectPage3(RoutePageReqVO reqVO) {
+    MPJLambdaWrapper<RouteDO> query = new MPJLambdaWrapper<RouteDO>();
+    query.selectAll(RouteDO.class);
+    query.eq(RouteDO::getUseState, 1);
+    query.selectAs(MaterialsDO::getMaterialNumber, RouteRespVO::getMaterialNumber);
+    query.selectAs(MaterialsDO::getMaterialName, RouteRespVO::getMaterialName);
+    query.leftJoin(RouteMaterialDO.class, RouteMaterialDO::getProcessrouteId, RouteDO::getId);
+    query.leftJoin(MaterialsDO.class, MaterialsDO::getId, RouteMaterialDO::getMaterialId);
+    if (StrUtil.isNotBlank(reqVO.getRouteNumber())) {
+        query.like(RouteDO::getRouteNumber, reqVO.getRouteNumber());
+    }
+    if (StrUtil.isNotBlank(reqVO.getRouteName())) {
+        query.like(RouteDO::getRouteName, reqVO.getRouteName());
+    }
+    if (reqVO.getUseState() != null) {
+        query.eq(RouteDO::getUseState, reqVO.getUseState());
+    }
+    if (reqVO.getUpdateStatus() != null) {
+        query.eq(RouteDO::getUpdateStatus, reqVO.getUpdateStatus());
+    }
+    if (StrUtil.isNotBlank(reqVO.getMaterialNumber())) {
+        query.like(MaterialsDO::getMaterialNumber, reqVO.getMaterialNumber());
+    }
+    if (StrUtil.isNotBlank(reqVO.getMaterialName())) {
+        query.like(MaterialsDO::getMaterialName, reqVO.getMaterialName());
+    }
+    query.orderByDesc(RouteDO::getId);
+    Page<RouteRespVO> listPage = selectJoinPage(new Page<>(reqVO.getPageNo(), reqVO.getPageSize())
+                                                , RouteRespVO.class, query);
+    PageResult<RouteRespVO> pageResult = new PageResult<RouteRespVO>();
+    pageResult.setTotal(listPage.getTotal());
+    pageResult.setList(listPage.getRecords());
+    return pageResult;
+}
+```
+
