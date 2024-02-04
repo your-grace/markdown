@@ -137,6 +137,28 @@ WHERE
 	FIND_IN_SET(DATA .PR_PROCESS_ID, ID._ids)
 ORDER BY LEVEL
 ```
+#### 递归with recursive
+
+```sql
+#递归子级
+WITH RECURSIVE cte AS (
+    SELECT * FROM gm_prp_flow WHERE pr_process_id = #{routeProcessId}
+    UNION ALL
+    SELECT d.* FROM gm_prp_flow d JOIN cte ON d.parent_id = cte.pr_process_id
+)
+SELECT * FROM cte
+```
+
+```sql
+#递归父级
+WITH RECURSIVE cte AS (
+    SELECT * FROM gm_prp_flow WHERE pr_process_id = #{routeProcessId}
+    UNION ALL
+    SELECT d.* FROM gm_prp_flow d JOIN cte ON d.pr_process_id = cte.parent_id
+)
+SELECT * FROM cte
+```
+
 #### GROUP_CONCAT
 
 ```sql

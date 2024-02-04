@@ -51,6 +51,91 @@
 </mapper>
 ```
 
+```sql
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gy.module.plm.dal.mysql.routeprocess.RouteProcessMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+    <select id="selectNewPage"
+            resultType="com.gy.module.plm.controller.admin.routeprocess.vo.RouteProcessNewRespVO">
+        SELECT
+        gpp.id AS id,
+        gpp.process_order AS processOrder,
+        gp.id AS processId,
+        gp.process_number AS processNumber,
+        gp.process_name AS processName,
+        gp.out_mark AS outMark,
+        gp.automate_mark AS automateMark,
+        gp.depart_id AS departId,
+        sd.name AS departName,
+        gp.process_focus AS processFocus,
+        gp.process_check AS processCheck
+        FROM
+        gm_processroute_process gpp
+        left join gm_process gp ON gp.id = gpp.process_id and gp.use_state = 1 and gp.deleted = 0
+        left join system_dept sd ON sd.id = gp.depart_id  and sd.deleted = 0
+        WHERE
+        gpp.processroute_id = #{pageReqVO.routeId}
+        AND gpp.deleted = 0
+        <if test="pageReqVO.id != null and pageReqVO.id != 0">
+            AND gpp.id != #{pageReqVO.id}
+        </if>
+        <if test="pageReqVO.processNumber != null and pageReqVO.processNumber != ''">
+            AND gp.process_number LIKE CONCAT('%',#{pageReqVO.processNumber},'%')
+        </if>
+        <if test="pageReqVO.processName != null and pageReqVO.processName != ''">
+            AND gp.process_name LIKE CONCAT('%',#{pageReqVO.processName},'%')
+        </if>
+        <if test="pageReqVO.departName != null and pageReqVO.departName != ''">
+            AND sd.name LIKE CONCAT('%',#{pageReqVO.departName},'%')
+        </if>
+        <if test="pageReqVO.processFocus != null">
+            AND gp.process_focus = #{pageReqVO.processFocus}
+        </if>
+        <if test="pageReqVO.processCheck != null">
+            AND gp.process_check = #{pageReqVO.processCheck}
+        </if>
+        <if test="pageReqVO.outMark != null">
+            AND gp.out_mark = #{pageReqVO.outMark}
+        </if>
+        <if test="pageReqVO.automateMark != null">
+            AND gp.automate_mark = #{pageReqVO.automateMark}
+        </if>
+        <if test="pageReqVO.prevProcessId != null and pageReqVO.prevProcessId.size > 0">
+            and gpp.id not in
+            <foreach item="prevProcessId" index="index" collection="pageReqVO.prevProcessId" open="(" separator="," close=")">
+                #{prevProcessId}
+            </foreach>
+        </if>
+        <if test="pageReqVO.nextProcessId != null and pageReqVO.nextProcessId.size > 0">
+            and gpp.id not in
+            <foreach item="nextProcessId" index="index" collection="pageReqVO.nextProcessId" open="(" separator="," close=")">
+                #{nextProcessId}
+            </foreach>maxOrder
+        </if>
+        <if test="pageReqVO.maxOrder != null">
+            AND gpp.process_order > #{pageReqVO.maxOrder}
+        </if>
+        ORDER BY gpp.process_order
+    </select>
+    <select id="fibonacci" resultType="com.gy.module.plm.dal.dataobject.prpflow.PrpFlowDO">
+        WITH RECURSIVE cte AS (
+            SELECT * FROM gm_prp_flow WHERE pr_process_id = #{routeProcessId}
+            UNION ALL
+            SELECT d.* FROM gm_prp_flow d JOIN cte ON d.parent_id = cte.pr_process_id
+        )
+        SELECT * FROM cte
+    </select>
+</mapper>
+
+```
+
 #### java
 
 ```java
