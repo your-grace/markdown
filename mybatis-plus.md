@@ -126,11 +126,11 @@
     </select>
     <select id="fibonacci" resultType="com.gy.module.plm.dal.dataobject.prpflow.PrpFlowDO">
         WITH RECURSIVE cte AS (
-            SELECT * FROM gm_prp_flow WHERE pr_process_id = #{routeProcessId}
+            SELECT * FROM gm_prp_flow  p WHERE p.pr_process_id = #{routeProcessId} and p.deleted = 0
             UNION ALL
-            SELECT d.* FROM gm_prp_flow d JOIN cte ON d.parent_id = cte.pr_process_id
+            SELECT d.* FROM gm_prp_flow d JOIN cte c ON d.parent_id = c.pr_process_id and c.deleted = 0
         )
-        SELECT * FROM cte
+        SELECT * FROM cte where deleted = 0
     </select>
 </mapper>
 
