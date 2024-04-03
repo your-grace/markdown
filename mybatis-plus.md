@@ -259,3 +259,39 @@ default PageResult<RouteRespVO> selectPage3(RoutePageReqVO reqVO) {
 }
 ```
 
+```java
+default PageResult<RouteMaterialNewRespVO> selectNewPage(RouteMaterialNewPageReqVO reqVO) {
+    MPJLambdaWrapper<RouteMaterialDO> query = new MPJLambdaWrapper<>();
+    query.selectAll(RouteMaterialDO.class);
+    query.eq(RouteMaterialDO::getProcessrouteId, reqVO.getProcessrouteId());
+    query.selectAs(MaterialsDO::getMaterialNumber, RouteMaterialNewRespVO::getMaterialNumber);
+    query.selectAs(MaterialsDO::getMaterialName, RouteMaterialNewRespVO::getMaterialName);
+    query.selectAs(MaterialsDO::getMaterialModel, RouteMaterialNewRespVO::getMaterialModel);
+    query.selectAs(MaterialsDO::getMaterialProperties, RouteMaterialNewRespVO::getMaterialProperties);
+    query.selectAs(MaterialsDO::getMaterialType, RouteMaterialNewRespVO::getMaterialType);
+    query.leftJoin(MaterialsDO.class, MaterialsDO::getId, RouteMaterialDO::getMaterialId);
+    if (StrUtil.isNotBlank(reqVO.getMaterialNumber())) {
+        query.like(MaterialsDO::getMaterialNumber, reqVO.getMaterialNumber());
+    }
+    if (StrUtil.isNotBlank(reqVO.getMaterialName())) {
+        query.like(MaterialsDO::getMaterialName, reqVO.getMaterialName());
+    }
+    if (StrUtil.isNotBlank(reqVO.getMaterialModel())) {
+        query.like(MaterialsDO::getMaterialModel, reqVO.getMaterialModel());
+    }
+    if (reqVO.getMaterialProperties() != null) {
+        query.eq(MaterialsDO::getMaterialProperties, reqVO.getMaterialProperties());
+    }
+    if (reqVO.getMaterialType() != null) {
+        query.eq(MaterialsDO::getMaterialType, reqVO.getMaterialType());
+    }
+    query.orderByDesc(RouteMaterialDO::getId);
+    Page<RouteMaterialNewRespVO> listPage = selectJoinPage(new Page<>(reqVO.getPageNo(), reqVO.getPageSize())
+                                                           , RouteMaterialNewRespVO.class, query);
+    PageResult<RouteMaterialNewRespVO> pageResult = new PageResult<>();
+    pageResult.setTotal(listPage.getTotal());
+    pageResult.setList(listPage.getRecords());
+    return pageResult;
+}
+```
+
