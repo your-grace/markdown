@@ -1,0 +1,45 @@
+{
+    "manifest_version": 3,
+    "name": "同程旅行抢单助手",
+    "version": "1.0",
+    "description": "自动监控并抢同程旅行订单",
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "cookies",
+        "storage",
+        "scripting"
+        // "https://ebk.17u.cn/*",
+        // "wss://ebkapi.17u.cn/*"
+    ],
+    "host_permissions": [
+        "https://ebk.17u.cn/*",
+        "wss://ebkapi.17u.cn/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "同程旅行抢单助手",
+        "default_icon": {
+            "16": "images/icon16.png",
+            "48": "images/icon48.png",
+            "128": "images/icon128.png"
+        }
+    },
+    "content_scripts": [
+        {
+            "matches": ["https://ebk.17u.cn/tailoreb/grabList*"],
+            "js": ["content.js"],
+            "run_at": "document_start"
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": ["popup.html", "popup.js","inject-ws-hook.js"],
+            "matches": ["*://*/*","<all_urls>"]
+        }
+    ]
+}
+    

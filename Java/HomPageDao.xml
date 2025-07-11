@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xianbei.cloud.travelcenter.web.dao.HomePageDao">
+    <select id="getDisposePlanCount" resultType="java.util.Map">
+        SELECT
+            COALESCE(COUNT(0),0) AS record_count,
+            GROUP_CONCAT(tpe.plan_id SEPARATOR ',') AS plan_ids
+        FROM tc_plan_extend tpe
+        LEFT JOIN tc_plan tp
+        ON tpe.plan_id = tp.id
+        <where>
+            <if test="userId != null">
+                tpe.sales_user_id = #{userId}
+            </if>
+            AND tp.state IN (1, 2)
+            AND tp.deleted = 0;
+        </where>
+    </select>
+    <!--已定制路书 已定制报价交集-->
+    <select id="getEarlyCommunicationCount" resultType="java.lang.Long">
+        SELECT
+            COUNT( DISTINCT tp.id )
+        FROM
+            tc_plan tp
+                INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+                <if test="userId != null">
+                    AND tpe.sales_user_id = #{userId}
+                </if>
+                INNER JOIN tc_schedule ts ON ts.plan_id = tp.id
+                AND ts.state = 1
+                AND ts.deleted = 0
+                INNER JOIN tc_schedule_resource_library tsrl ON tsrl.schedule_id = ts.id
+                INNER JOIN tc_resource_library trl ON tsrl.resource_library_id = trl.id
+                AND trl.deleted = 0
+                INNER JOIN ( SELECT DISTINCT plan_id FROM tc_plan_product WHERE deleted = 0 ) tpp ON tp.id = tpp.plan_id
+        WHERE
+            tp.state IN (1, 2 )
+          AND tp.deleted = 0;
+    </select>
+
+    <!-- 已制作报价   -->
+    <select id="getQuotationPreparedCount" resultType="java.util.Map">
+        SELECT
+            COALESCE(COUNT( tp.id ),0) AS record_count,
+            GROUP_CONCAT(tp.id SEPARATOR ',') AS plan_ids
+        FROM
+        tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        INNER JOIN ( SELECT DISTINCT plan_id FROM tc_plan_product WHERE deleted = 0 ) tpp ON tp.id = tpp.plan_id
+        <where>
+            tp.state IN (1, 2 )
+            AND tp.deleted = 0
+            <if test="userId != null">
+                And tpe.sales_user_id = #{userId}
+            </if>
+        </where>
+    </select>
+    <!-- 已定制路书   -->
+    <select id="getCustomizedRoadBookCount" resultType="java.util.Map">
+        SELECT
+            COALESCE(COUNT( DISTINCT tp.id ),0) AS record_count,
+            GROUP_CONCAT(DISTINCT tp.id SEPARATOR ',') AS plan_ids
+        FROM
+        tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        <if test="userId != null">
+            And tpe.sales_user_id = #{userId}
+        </if>
+        INNER JOIN tc_schedule ts ON ts.plan_id = tp.id
+        AND ts.state = 1
+        AND ts.deleted = 0
+        INNER JOIN tc_schedule_resource_library tsrl ON tsrl.schedule_id = ts.id
+        INNER JOIN tc_resource_library trl ON tsrl.resource_library_id = trl.id
+        AND trl.deleted = 0
+        <where>
+            tp.state IN (1, 2 )
+            AND tp.deleted = 0
+            AND tsrl.id IS NOT NULL
+        </where>
+    </select>
+
+    <!-- 已成单未完成-待出行 -->
+    <select id="getToBeTraveledCount" resultType="java.util.Map">
+        SELECT
+        COALESCE(COUNT( DISTINCT tp.id ),0) AS record_count,
+        GROUP_CONCAT(DISTINCT tp.id SEPARATOR ',') AS plan_ids
+        FROM
+        tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        <where>
+            tp.state IN (3, 5 )
+            AND tp.deleted = 0
+            AND CURDATE() <![CDATA[ < ]]> tp.begin_date
+            <if test="userId != null">
+                And tpe.sales_user_id = #{userId}
+            </if>
+        </where>
+    </select>
+    <!-- 已成单未完成-已出行 -->
+    <select id="getTraveledCount" resultType="java.util.Map">
+        SELECT
+        COALESCE(COUNT( DISTINCT tp.id ),0) AS record_count,
+        GROUP_CONCAT(DISTINCT tp.id SEPARATOR ',') AS plan_ids
+        FROM
+        tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        <where>
+            tp.state IN (3, 5 )
+            AND tp.deleted = 0
+            AND CURDATE() <![CDATA[ >= ]]> tp.begin_date
+            AND CURDATE() <![CDATA[ < ]]> tp.end_date
+            <if test="userId != null">
+                And tpe.sales_user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+    <!-- 暂未采购订单   -->
+    <select id="getPendingPurchaseOrderCount" resultType="java.util.Map">
+        SELECT
+        COALESCE(COUNT( DISTINCT tp.id ),0) AS record_count,
+        GROUP_CONCAT(DISTINCT tp.id SEPARATOR ',') AS plan_ids
+        FROM
+        tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        <if test="userId != null">
+            And tpe.sales_user_id = #{userId}
+        </if>
+        INNER JOIN tc_plan_product tpp ON tp.id = tpp.plan_id
+        AND tpp.deleted = 0
+        INNER JOIN tc_plan_product_extend tppe ON tpp.id = tppe.plan_product_id
+        <where>
+            tp.state IN (3, 5 )
+            AND tp.deleted = 0
+            AND tppe.purchase_status = 1;
+        </where>
+    </select>
+    <!-- 暂未采购产品   -->
+    <select id="getPendingPurchaseProductCount" resultType="java.util.Map">
+        SELECT
+        COALESCE(COUNT( DISTINCT tpp.id ),0)  AS record_count,
+        GROUP_CONCAT(DISTINCT tpp.id SEPARATOR ',') AS plan_ids
+        FROM
+        tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        <if test="userId != null">
+            And tpe.sales_user_id = #{userId}
+        </if>
+        INNER JOIN tc_plan_product tpp ON tp.id = tpp.plan_id
+        AND tpp.deleted = 0
+        LEFT JOIN tc_plan_product_extend tppe ON tpp.id = tppe.plan_product_id
+        <where>
+            tp.state IN (3, 5 )
+            AND tp.deleted = 0
+            AND tppe.purchase_status = 1;
+        </where>
+    </select>
+
+    <select id="getCorrespondingDemandCount" resultType="java.lang.Long">
+        SELECT
+        COALESCE(COUNT(tpe.plan_id),0)
+        FROM
+        tc_plan_extend tpe
+        LEFT JOIN tc_plan tp ON tpe.plan_id = tp.id
+        <where>
+            tp.deleted = 0
+            <if test="userId != null">
+                And tpe.sales_user_id = #{userId}
+            </if>
+            AND tp.create_time >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01 00:00:00')
+            AND tp.create_time <![CDATA[ <= ]]> DATE_FORMAT(LAST_DAY(CURRENT_DATE), '%Y-%m-%d 23:59:59');
+        </where>
+    </select>
+
+    <select id="getCompletedOrderCount" resultType="java.lang.Long">
+        SELECT
+        COALESCE(COUNT(tpe.plan_id),0)
+        FROM
+        tc_plan_extend tpe
+        LEFT JOIN tc_plan tp ON tpe.plan_id = tp.id
+        <where>
+            tp.deleted = 0
+            <if test="userId != null">
+                And tpe.sales_user_id = #{userId}
+            </if>
+            AND tp.state in (3, 5)
+            AND tp.order_time >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01 00:00:00')
+            AND tp.order_time <![CDATA[ <= ]]> DATE_FORMAT(LAST_DAY(CURRENT_DATE), '%Y-%m-%d 23:59:59');
+        </where>
+    </select>
+
+    <select id="getFlowAndNetGrossProfit" resultType="java.util.Map">
+        SELECT
+            COALESCE(SUM(IFNULL(tppe.channel_fee_cny, 0)), 0) AS channelFee,
+            COALESCE(SUM(IFNULL(tppe.amount_cny, 0)), 0) AS turnover,
+            COALESCE(SUM(IFNULL(tppe.amount_cny - tppe.channel_fee_cny - tppe.sale_cost_cny, 0)), 0) AS grossProfit,
+            COALESCE(
+                SUM(IFNULL(tppe.amount_cny - tppe.channel_fee_cny - tppe.sale_cost_cny, 0)) /
+                NULLIF(SUM(IFNULL(tppe.amount_cny, 0)), 0) * 100,
+                0
+            ) AS netGrossProfitRate
+        FROM tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        <if test="userId != null">
+            AND tpe.sales_user_id = #{userId}
+        </if>
+        LEFT JOIN tc_plan_product tpp ON tpp.plan_id = tp.id AND tpp.deleted = 0 AND tpp.sub_product = 0
+        LEFT JOIN tc_plan_product_extend tppe ON tppe.plan_product_id = tpp.id
+        <if test="flag !=null and flag == 5 ">
+            AND tppe.purchase_status = 5
+        </if>
+        <where>
+            tp.deleted = 0
+            AND tp.state IN (3, 5)
+            AND tp.order_time >= DATE_FORMAT(CURRENT_DATE, '%Y-%m-01 00:00:00')
+            AND tp.order_time <![CDATA[ <= ]]> DATE_FORMAT(LAST_DAY(CURRENT_DATE), '%Y-%m-%d 23:59:59')
+        </where>
+    </select>
+
+    <!-- 我的业绩查询 -->
+    <select id="getMyPerformanceData" resultType="com.xianbei.cloud.travelcenter.common.entity.dto.MyPerformanceDto">
+        SELECT
+        -- 需求数使用创建时间统计
+        COALESCE(COUNT(DISTINCT CASE WHEN tp.create_time BETWEEN
+        CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        THEN tpe.plan_id ELSE NULL END), 0) AS demandQuntity,
+
+        -- 其他字段使用订单时间统计
+        COALESCE(COUNT(DISTINCT CASE WHEN tp.state IN (3, 5) AND
+        tp.order_time BETWEEN CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        THEN tpe.plan_id ELSE NULL END), 0) AS completedOrder,
+
+        COALESCE(
+        COUNT(DISTINCT CASE WHEN tp.state IN (3, 5) AND
+        tp.order_time BETWEEN CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        THEN tpe.plan_id ELSE NULL END) * 100.0 /
+        NULLIF(COUNT(DISTINCT CASE WHEN tp.create_time BETWEEN
+        CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        THEN tpe.plan_id ELSE NULL END), 0),
+        0
+        ) AS completedOrdeRate,
+
+        COALESCE(SUM(IFNULL(CASE WHEN tp.order_time BETWEEN
+        CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        THEN tppe.amount_cny ELSE 0 END, 0)), 0) AS turnover,
+
+        COALESCE(SUM(IFNULL(CASE WHEN tp.order_time BETWEEN
+        CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        THEN tppe.amount_cny - tppe.channel_fee_cny - tppe.sale_cost_cny ELSE 0 END, 0)), 0) AS netGrossProfit,
+
+        COALESCE(
+        SUM(IFNULL(CASE WHEN tp.order_time BETWEEN
+        CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        THEN tppe.amount_cny - tppe.channel_fee_cny - tppe.sale_cost_cny ELSE 0 END, 0)) /
+        NULLIF(SUM(IFNULL(CASE WHEN tp.order_time BETWEEN
+        CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        THEN tppe.amount_cny ELSE 0 END, 0)), 0) * 100,
+        0
+        ) AS netGrossProfitRate
+        FROM tc_plan_extend tpe
+        LEFT JOIN tc_plan tp ON tpe.plan_id = tp.id AND tp.deleted = 0
+        LEFT JOIN tc_plan_product tpp ON tpp.plan_id = tp.id AND tpp.deleted = 0 AND tpp.sub_product = 0
+        LEFT JOIN tc_plan_product_extend tppe ON tppe.plan_product_id = tpp.id
+        <if test="flag !=null and flag == 5 ">
+            AND tppe.purchase_status = 5
+        </if>
+        WHERE
+        -- 必须满足创建时间或订单时间在范围内（根据不同统计需求）
+        (tp.create_time BETWEEN CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        OR tp.order_time BETWEEN CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59'))
+        <if test="userId != null">
+            AND tpe.sales_user_id = #{userId}
+        </if>
+        GROUP BY tpe.sales_user_id
+    </select>
+
+    <resultMap id="myPerformanceDtoResultMap" type="com.xianbei.cloud.travelcenter.common.entity.dto.MyPerformanceDto">
+        <result property="userId" column="userId" />
+        <result property="demandQuntity" column="demandQuntity" />
+        <result property="completedOrder" column="completedOrder" />
+        <result property="completedOrdeRate" column="completedOrdeRate" />
+        <result property="turnover" column="turnover" />
+        <result property="netGrossProfit" column="netGrossProfit" />
+        <result property="netGrossProfitRate" column="netGrossProfitRate" />
+    </resultMap>
+    <!-- 获取多个用户的部门业绩数据 -->
+    <select id="getDepartmentUsersPerformanceData" resultMap="myPerformanceDtoResultMap">
+        SELECT
+        su.userId AS userId,
+        COALESCE(t.demandQuntity, 0) AS demandQuntity,
+        COALESCE(t.completedOrder, 0) AS completedOrder,
+        COALESCE(t.completedOrdeRate, 0) AS completedOrdeRate,
+        COALESCE(t.turnover, 0) AS turnover,
+        COALESCE(t.netGrossProfit, 0) AS netGrossProfit,
+        COALESCE(t.netGrossProfitRate, 0) AS netGrossProfitRate
+        FROM (
+        SELECT DISTINCT id AS userId
+        FROM (
+        <foreach item="id" collection="userIds" separator=" UNION ALL ">
+            SELECT #{id} AS id
+        </foreach>
+        ) tmp
+        ) su
+        LEFT JOIN (
+        SELECT
+        tpe.sales_user_id AS userId,
+        COUNT(DISTINCT tpe.plan_id) AS demandQuntity,
+        COUNT(DISTINCT CASE WHEN tp.state IN (3, 5) THEN tpe.plan_id ELSE NULL END) AS completedOrder,
+        COALESCE(
+        COUNT(DISTINCT CASE WHEN tp.state IN (3, 5) THEN tpe.plan_id ELSE NULL END) * 100.0 / NULLIF(COUNT(tpe.plan_id), 0),
+        0
+        ) AS completedOrdeRate,
+        COALESCE(SUM(IFNULL(tppe.amount_cny, 0)), 0) AS turnover,
+        COALESCE(SUM(IFNULL(tppe.amount_cny - tppe.channel_fee_cny - tppe.sale_cost_cny, 0)), 0) AS netGrossProfit,
+        COALESCE(
+        SUM(IFNULL(tppe.amount_cny - tppe.channel_fee_cny - tppe.sale_cost_cny, 0)) /
+        NULLIF(SUM(IFNULL(tppe.amount_cny, 0)), 0) * 100,
+        0
+        ) AS netGrossProfitRate
+        FROM tc_plan_extend tpe
+        LEFT JOIN tc_plan tp ON tpe.plan_id = tp.id
+        LEFT JOIN tc_plan_product tpp ON tpp.plan_id = tp.id AND tpp.deleted = 0 AND tpp.sub_product = 0
+        LEFT JOIN tc_plan_product_extend tppe ON tppe.plan_product_id = tpp.id
+        <if test="flag !=null and flag == 5 ">
+            AND tppe.purchase_status = 5
+        </if>
+        WHERE  tp.order_time BETWEEN CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+        AND tpe.sales_user_id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+        GROUP BY tpe.sales_user_id
+        ) t ON su.userId = t.userId;
+    </select>
+
+    <!-- 获取多个用户的部门业绩数据，并按时间范围聚合 -->
+    <select id="getDepartmentUsersPerformanceDataByTimeRange" resultType="com.xianbei.cloud.travelcenter.common.entity.dto.DepartmentPerformanceDto">
+        SELECT
+            COUNT(tpe.plan_id) AS demandQuntity,
+            IFNULL(COUNT(DISTINCT CASE WHEN tp.state IN (3, 5) THEN tpe.plan_id ELSE NULL END), 0) AS completedOrder,
+            COALESCE(SUM(IFNULL(tppe.amount_cny, 0)), 0) AS turnover,
+            COALESCE(SUM(IFNULL(tppe.amount_cny - tppe.channel_fee_cny - tppe.sale_cost_cny, 0)), 0) AS netGrossProfit,
+            COALESCE(SUM(IFNULL(tppe.amount_cny - tppe.channel_fee_cny - tppe.sale_cost_cny, 0)) /NULLIF(SUM(IFNULL(tppe.amount_cny, 0)), 0) * 100,0) AS netGrossProfitRate
+        FROM tc_plan_extend tpe
+        LEFT JOIN tc_plan tp ON tpe.plan_id = tp.id AND tp.deleted = 0
+        LEFT JOIN tc_plan_product tpp ON tpp.plan_id = tp.id AND tpp.deleted = 0 AND tpp.sub_product = 0
+        LEFT JOIN tc_plan_product_extend tppe ON tppe.plan_product_id = tpp.id
+        <if test="flag !=null and flag == 5 ">
+            AND tppe.purchase_status = 5
+        </if>
+        WHERE tp.order_time BETWEEN CONCAT(${startDate}, ' 00:00:00') AND CONCAT(${endDate}, ' 23:59:59')
+          AND tpe.sales_user_id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+    <!-- 查询当前用户客户出行数量 -->
+    <select id="getMyCustomerTravelCount" resultType="java.lang.Long">
+        SELECT COALESCE(COUNT(DISTINCT tp.id), 0)
+        FROM tc_plan tp
+                 INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        WHERE tp.deleted = 0
+          AND tp.state IN (3, 5)
+          AND tp.begin_date BETWEEN ${startDate} AND ${endDate}
+        <if test="userId != null">
+            AND tpe.sales_user_id = #{userId}
+        </if>
+    </select>
+
+    <!-- 查询当前用户客户行中数量 -->
+    <select id="getMyCustomerInTransitCount" resultType="java.lang.Long">
+        SELECT COALESCE(COUNT(DISTINCT tp.id), 0)
+        FROM tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        <include refid="inTransitCondition">
+            <property name="condition" value="inTransit"/>
+        </include>
+        <if test="userId != null">
+            AND tpe.sales_user_id = #{userId}
+        </if>
+    </select>
+
+    <!-- 查询部门客户出行数量 -->
+    <select id="getDepartmentCustomerTravelCount" resultType="java.lang.Long">
+        SELECT COALESCE(COUNT(DISTINCT tp.id), 0)
+        FROM tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        WHERE tp.deleted = 0
+        AND tp.state IN (3, 5)
+        AND tp.begin_date BETWEEN ${startDate} AND ${endDate}
+        AND tpe.sales_user_id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+    <!-- 查询部门客户行中数量 -->
+    <select id="getDepartmentCustomerInTransitCount" resultType="java.lang.Long">
+        SELECT COALESCE(COUNT(DISTINCT tp.id), 0)
+        FROM tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        <include refid="inTransitCondition">
+            <property name="condition" value="inTransit"/>
+        </include>
+        AND tpe.sales_user_id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+    <!-- 定义可复用的日期判断片段 -->
+    <sql id="inTransitCondition">
+        <where>
+            tp.deleted = 0
+            AND tp.state IN (3, 5)
+
+            <!-- 今日出行：begin_date == today AND end_date > today -->
+            <if test="condition == 'todayTravel'">
+                AND tp.begin_date = ${startDate}
+            </if>
+
+            <!-- 行程中：begin_date <= today AND end_date >= today -->
+            <if test="condition == 'inTransit'">
+                AND tp.begin_date <![CDATA[ <= ]]> ${startDate}
+                AND (tp.end_date IS NULL OR tp.end_date >= ${endDate})
+            </if>
+
+            <!-- 今日回程：end_date == today -->
+            <if test="condition == 'todayReturn'">
+                AND tp.end_date = ${endDate}
+            </if>
+
+            <!-- 回程7日内：end_date BETWEEN today AND today+7 -->
+            <if test="condition == 'returnWithin7Days'">
+                AND tp.end_date BETWEEN ${startDate} AND ${endDate}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getDepartmentCustomerBirthdayCount" resultType="java.util.Map">
+        SELECT COALESCE(COUNT(DISTINCT tp.id), 0)  AS record_count,
+        GROUP_CONCAT(DISTINCT tp.id SEPARATOR ',') AS plan_ids
+        FROM tc_plan tp
+        INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+        INNER JOIN tc_plan_customer tpc ON tp.id = tpc.plan_id
+        WHERE tp.deleted = 0
+        AND tp.state IN (3, 5)
+        AND CONCAT(DATE_FORMAT(tpc.birth_date, '%m'), '-', DATE_FORMAT(tpc.birth_date, '%d'))
+        BETWEEN ${startDate} AND ${endDate}
+        AND tpe.sales_user_id IN
+        <foreach item="userId" collection="userIds" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+    <select id="getMyCustomerBirthdayCount" resultType="java.util.Map">
+        SELECT COALESCE(COUNT(DISTINCT tp.id), 0) AS record_count,
+        GROUP_CONCAT(DISTINCT tp.id SEPARATOR ',') AS plan_ids
+        FROM tc_plan tp
+                 INNER JOIN tc_plan_extend tpe ON tp.id = tpe.plan_id
+                 INNER JOIN tc_plan_customer tpc ON tp.id = tpc.plan_id
+        WHERE tp.deleted = 0
+          AND tp.state IN (3, 5)
+          AND CONCAT(DATE_FORMAT(tpc.birth_date, '%m'), '-', DATE_FORMAT(tpc.birth_date, '%d'))
+          BETWEEN ${startDate} AND ${endDate}
+        <if test="userId != null">
+            AND tpe.sales_user_id = #{userId}
+        </if>
+    </select>
+
+    <select id="isPlanExist" resultType="int">
+        SELECT
+        COUNT(0)
+        FROM
+        tc_plan tp
+        WHERE tp.deleted = 0
+        <if test="planId != null and planId != ''">
+            AND tp.id = #{planId}
+        </if>
+    </select>
+</mapper>
